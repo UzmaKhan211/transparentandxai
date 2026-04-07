@@ -45,9 +45,9 @@ const Index = () => {
       <main className="py-8 pb-16">
         {state.step === 1 && <MissionBrief onNext={nextStep} />}
         {state.step === 2 && <EvidenceBoard onNext={nextStep} />}
-        {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} />}
-        {state.step === 4 && <BuildScreen state={state} onUpdate={updateState} onNext={nextStep} />}
-        {state.step === 5 && <FeedbackScreen state={state} onNext={nextStep} />}
+{state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
+        {state.step === 4 && <BuildScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
+        {state.step === 5 && <FeedbackScreen state={state} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 6 && <ReflectScreen state={state} onUpdate={updateState} onGoToStep={goToStep} />}
       </main>
     </div>

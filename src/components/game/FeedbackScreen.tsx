@@ -1,17 +1,26 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Users } from 'lucide-react';
 import { generateFeedback, GameState } from './GameState';
+import { sfx } from '@/hooks/useSoundEffects';
 
 interface FeedbackScreenProps {
   state: GameState;
   onNext: () => void;
+  onGoToStep: (step: number) => void;
 }
 
-const FeedbackScreen = ({ state, onNext }: FeedbackScreenProps) => {
+const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
   const feedback = generateFeedback(state.selectedElements);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
+      <button
+        onClick={() => { sfx.navigate(); onGoToStep(4); }}
+        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Build
+      </button>
       <div className="flex items-center gap-2 mb-2">
         <Users className="w-5 h-5 text-primary" />
         <h2 className="text-xl font-bold">Test Your Design</h2>
@@ -46,7 +55,7 @@ const FeedbackScreen = ({ state, onNext }: FeedbackScreenProps) => {
       </div>
 
       <div className="flex justify-end mt-8">
-        <button onClick={onNext} className="btn-mission flex items-center gap-2">
+        <button onClick={() => { sfx.navigate(); onNext(); }} className="btn-mission flex items-center gap-2">
           Revise & Reflect
           <ArrowRight className="w-4 h-4" />
         </button>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, Shield, ArrowRight } from 'lucide-react';
+import { sfx } from '@/hooks/useSoundEffects';
 
 interface MissionBriefProps {
   onNext: () => void;
@@ -58,7 +59,7 @@ const MissionBrief = ({ onNext }: MissionBriefProps) => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.7 }}
-        onClick={onNext}
+        onClick={() => { sfx.navigate(); onNext(); }}
         className="btn-mission mt-8 flex items-center gap-2"
       >
         Enter Control Room

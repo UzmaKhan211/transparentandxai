@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Search } from 'lucide-react';
 import { GameState } from './GameState';
+import { sfx } from '@/hooks/useSoundEffects';
 
 interface DiagnoseScreenProps {
   state: GameState;
   onUpdate: (updates: Partial<GameState>) => void;
   onNext: () => void;
+  onGoToStep: (step: number) => void;
 }
 
 const MISSING_OPTIONS = [
@@ -24,7 +26,7 @@ const BIGGEST_PROBLEM_OPTIONS = [
   'It makes the decision feel final with no options',
 ];
 
-const DiagnoseScreen = ({ state, onUpdate, onNext }: DiagnoseScreenProps) => {
+const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenProps) => {
   const toggleMissing = (option: string) => {
     const current = state.missingInfo;
     const updated = current.includes(option)
@@ -37,6 +39,13 @@ const DiagnoseScreen = ({ state, onUpdate, onNext }: DiagnoseScreenProps) => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
+      <button
+        onClick={() => { sfx.navigate(); onGoToStep(2); }}
+        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Evidence
+      </button>
       <div className="flex items-center gap-2 mb-6">
         <Search className="w-5 h-5 text-primary" />
         <h2 className="text-xl font-bold">Diagnose the Problem</h2>

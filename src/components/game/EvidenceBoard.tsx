@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Mail, User, Cpu, BarChart3, FileText, BookOpen, X, ArrowRight } from 'lucide-react';
+import { sfx } from '@/hooks/useSoundEffects';
 
 interface EvidenceBoardProps {
   onNext: () => void;
@@ -82,7 +83,7 @@ const EvidenceBoard = ({ onNext }: EvidenceBoardProps) => {
 
   const handleCardClick = (id: string) => {
     setExpandedCard(id);
-    setViewedCards(prev => new Set(prev).add(id));
+    setViewedCards(prev => { const s = new Set(prev); const isNew = !s.has(id); s.add(id); if (isNew) sfx.select(); else sfx.click(); return s; });
   };
 
   const allViewed = viewedCards.size === EVIDENCE_CARDS.length;

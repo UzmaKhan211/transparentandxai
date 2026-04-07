@@ -1,20 +1,24 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Wrench, Eye } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Wrench, Eye } from 'lucide-react';
 import { EXPLANATION_OPTIONS, generatePreview, GameState } from './GameState';
+import { sfx } from '@/hooks/useSoundEffects';
 
 interface BuildScreenProps {
   state: GameState;
   onUpdate: (updates: Partial<GameState>) => void;
   onNext: () => void;
+  onGoToStep: (step: number) => void;
 }
 
-const BuildScreen = ({ state, onUpdate, onNext }: BuildScreenProps) => {
+const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) => {
   const toggleElement = (id: string) => {
     const current = state.selectedElements;
     if (current.includes(id)) {
       onUpdate({ selectedElements: current.filter(e => e !== id) });
+      sfx.deselect();
     } else if (current.length < 5) {
       onUpdate({ selectedElements: [...current, id] });
+      sfx.select();
     }
   };
 
@@ -23,6 +27,13 @@ const BuildScreen = ({ state, onUpdate, onNext }: BuildScreenProps) => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto px-4">
+      <button
+        onClick={() => { sfx.navigate(); onGoToStep(3); }}
+        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Diagnosis
+      </button>
       <div className="flex items-center gap-2 mb-2">
         <Wrench className="w-5 h-5 text-primary" />
         <h2 className="text-xl font-bold">Build the Explanation</h2>

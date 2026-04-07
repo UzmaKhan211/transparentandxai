@@ -1,0 +1,58 @@
+import { motion } from 'framer-motion';
+import { ArrowRight, Users } from 'lucide-react';
+import { generateFeedback, GameState } from './GameState';
+
+interface FeedbackScreenProps {
+  state: GameState;
+  onNext: () => void;
+}
+
+const FeedbackScreen = ({ state, onNext }: FeedbackScreenProps) => {
+  const feedback = generateFeedback(state.selectedElements);
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Users className="w-5 h-5 text-primary" />
+        <h2 className="text-xl font-bold">Test Your Design</h2>
+      </div>
+      <p className="text-sm text-muted-foreground mb-6">See how different stakeholders respond to your explanation.</p>
+
+      <div className="space-y-4">
+        {feedback.map((fb, i) => (
+          <motion.div
+            key={fb.persona}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.3 }}
+            className={`feedback-card ${
+              fb.sentiment === 'positive' ? 'feedback-positive' : fb.sentiment === 'warning' ? 'feedback-warning' : 'feedback-negative'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                fb.sentiment === 'positive' ? 'bg-success/20 text-success' : fb.sentiment === 'warning' ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'
+              }`}>
+                {fb.persona.split(' ').map(n => n[0]).join('')}
+              </div>
+              <div>
+                <p className="font-semibold text-sm">{fb.persona}</p>
+                <p className="text-xs text-muted-foreground">{fb.role}</p>
+              </div>
+            </div>
+            <p className="text-sm text-secondary-foreground italic">"{fb.message}"</p>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="flex justify-end mt-8">
+        <button onClick={onNext} className="btn-mission flex items-center gap-2">
+          Revise & Reflect
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+export default FeedbackScreen;

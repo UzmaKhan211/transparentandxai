@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 const STEPS = [
-  'Mission Brief',
-  'Evidence Board',
+  'Brief',
+  'Evidence',
   'Diagnose',
   'Build',
   'Test',

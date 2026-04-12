@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import StepIndicator from '@/components/game/StepIndicator';
+import OnboardingScreen from '@/components/game/OnboardingScreen';
 import MissionBrief from '@/components/game/MissionBrief';
 import EvidenceBoard from '@/components/game/EvidenceBoard';
 import DiagnoseScreen from '@/components/game/DiagnoseScreen';
@@ -10,7 +11,7 @@ import { GameState, initialGameState } from '@/components/game/GameState';
 import { Shield } from 'lucide-react';
 
 const Index = () => {
-  const [state, setState] = useState<GameState>(initialGameState);
+  const [state, setState] = useState<GameState>({ ...initialGameState, step: 0 });
 
   const updateState = useCallback((updates: Partial<GameState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -43,9 +44,10 @@ const Index = () => {
 
       {/* Content */}
       <main className="py-8 pb-16">
+        {state.step === 0 && <OnboardingScreen onNext={nextStep} />}
         {state.step === 1 && <MissionBrief onNext={nextStep} />}
         {state.step === 2 && <EvidenceBoard onNext={nextStep} />}
-{state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
+        {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 4 && <BuildScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 5 && <FeedbackScreen state={state} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 6 && <ReflectScreen state={state} onUpdate={updateState} onGoToStep={goToStep} />}

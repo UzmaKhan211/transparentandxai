@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PenLine, CheckCircle2, ArrowLeft, Eye, ChevronDown, ChevronUp, Send, Users } from 'lucide-react';
 import { EXPLANATION_OPTIONS, generatePreview, generateFeedback, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
+import ResponseExport from './ResponseExport';
 
 interface ReflectScreenProps {
   state: GameState;
@@ -242,13 +243,17 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep }: ReflectScreenProps) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               onAnimationComplete={() => sfx.complete()}
-              className="glass-panel p-6 text-center border-primary/30 mb-8"
+              className="space-y-6 mb-8"
             >
-              <CheckCircle2 className="w-10 h-10 text-primary mx-auto mb-3" />
-              <h3 className="text-lg font-bold mb-1">Mission Complete</h3>
-              <p className="text-sm text-muted-foreground">
-                You've investigated the case, diagnosed the problem, designed a transparent explanation, and reflected on your choices. Great work, Ethics Team member!
-              </p>
+              <div className="glass-panel p-6 text-center border-primary/30">
+                <CheckCircle2 className="w-10 h-10 text-primary mx-auto mb-3" />
+                <h3 className="text-lg font-bold mb-1">Mission Complete</h3>
+                <p className="text-sm text-muted-foreground">
+                  You've investigated the case, diagnosed the problem, designed a transparent explanation, and reflected on your choices. Great work, Ethics Team member!
+                </p>
+              </div>
+
+              <ResponseExport state={state} />
             </motion.div>
           )}
         </motion.div>

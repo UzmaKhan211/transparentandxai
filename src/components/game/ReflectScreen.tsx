@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PenLine, CheckCircle2, ArrowLeft, Eye, ChevronDown, ChevronUp, Send, Users } from 'lucide-react';
+import { PenLine, ArrowLeft, Eye, ChevronDown, ChevronUp, Send, Users } from 'lucide-react';
 import { EXPLANATION_OPTIONS, generatePreview, generateFeedback, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
-import ResponseExport from './ResponseExport';
 
 interface ReflectScreenProps {
   state: GameState;
   onUpdate: (updates: Partial<GameState>) => void;
   onGoToStep: (step: number) => void;
+  onSubmitAll: () => void;
 }
 
 const REFLECTION_QUESTIONS = [
@@ -18,7 +18,7 @@ const REFLECTION_QUESTIONS = [
   'Do you think your explanation fully solves the problem? Why or why not?',
 ];
 
-const ReflectScreen = ({ state, onUpdate, onGoToStep }: ReflectScreenProps) => {
+const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScreenProps) => {
   const [showRevise, setShowRevise] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [expandedFeedback, setExpandedFeedback] = useState<string | null>(null);
@@ -65,7 +65,6 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep }: ReflectScreenProps) => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
-      {/* Back button */}
       <button
         onClick={handleBack}
         className="btn-outline-game flex items-center gap-2 text-sm mb-6"
@@ -222,7 +221,7 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep }: ReflectScreenProps) => {
               <p className="font-semibold">Reflection Questions</p>
             </div>
             <p className="text-sm text-muted-foreground -mt-3">
-              Now that you've finalized your explanation, reflect on your design decisions.
+              Now that you've finalized your explanation, reflect on your design decisions. Each response needs at least 6 characters.
             </p>
             {REFLECTION_QUESTIONS.map((q, i) => (
               <div key={q}>
@@ -238,23 +237,18 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep }: ReflectScreenProps) => {
             ))}
           </div>
 
-          {allReflectionsDone && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              onAnimationComplete={() => sfx.complete()}
-              className="space-y-6 mb-8"
+          <div className="flex justify-center mb-10">
+            <button
+              onClick={() => { sfx.submit(); onSubmitAll(); }}
+              disabled={!allReflectionsDone}
+              className={`btn-mission flex items-center gap-2 text-base px-10 py-4 ${!allReflectionsDone ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
-              <div className="glass-panel p-6 text-center border-primary/30">
-                <CheckCircle2 className="w-10 h-10 text-primary mx-auto mb-3" />
-                <h3 className="text-lg font-bold mb-1">Mission Complete</h3>
-                <p className="text-sm text-muted-foreground">
-                  You've investigated the case, diagnosed the problem, designed a transparent explanation, and reflected on your choices. Great work, Ethics Team member!
-                </p>
-              </div>
-
-              <ResponseExport state={state} />
-            </motion.div>
+              <Send className="w-4 h-4" />
+              Submit Responses
+            </button>
+          </div>
+          {!allReflectionsDone && (
+            <p className="text-xs text-muted-foreground text-center -mt-6 mb-8">Complete all reflection questions to submit</p>
           )}
         </motion.div>
       )}

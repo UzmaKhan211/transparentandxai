@@ -7,6 +7,7 @@ import DiagnoseScreen from '@/components/game/DiagnoseScreen';
 import BuildScreen from '@/components/game/BuildScreen';
 import FeedbackScreen from '@/components/game/FeedbackScreen';
 import ReflectScreen from '@/components/game/ReflectScreen';
+import MissionCompleteScreen from '@/components/game/MissionCompleteScreen';
 import { GameState, initialGameState } from '@/components/game/GameState';
 import { Shield } from 'lucide-react';
 
@@ -29,7 +30,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      {state.step > 1 && (
+      {state.step > 1 && state.step <= 6 && (
         <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -50,7 +51,8 @@ const Index = () => {
         {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 4 && <BuildScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 5 && <FeedbackScreen state={state} onNext={nextStep} onGoToStep={goToStep} />}
-        {state.step === 6 && <ReflectScreen state={state} onUpdate={updateState} onGoToStep={goToStep} />}
+        {state.step === 6 && <ReflectScreen state={state} onUpdate={updateState} onGoToStep={goToStep} onSubmitAll={() => goToStep(7)} />}
+        {state.step === 7 && <MissionCompleteScreen state={state} />}
       </main>
     </div>
   );

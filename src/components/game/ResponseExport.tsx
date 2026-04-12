@@ -126,13 +126,13 @@ const ResponseExport = ({ state }: ResponseExportProps) => {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 flex flex-col items-center">
       <p className="section-label flex items-center gap-2">
         <FileText className="w-3.5 h-3.5" />
         Share Your Responses
       </p>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         <button
           onClick={handleDownload}
           className="btn-outline-game flex items-center gap-2 text-sm"

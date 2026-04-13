@@ -8,11 +8,14 @@ import BuildScreen from '@/components/game/BuildScreen';
 import FeedbackScreen from '@/components/game/FeedbackScreen';
 import ReflectScreen from '@/components/game/ReflectScreen';
 import MissionCompleteScreen from '@/components/game/MissionCompleteScreen';
+import ActivityTimer from '@/components/game/ActivityTimer';
 import { GameState, initialGameState } from '@/components/game/GameState';
+import { useActivityTimer } from '@/hooks/useActivityTimer';
 import { Shield } from 'lucide-react';
 
 const Index = () => {
   const [state, setState] = useState<GameState>({ ...initialGameState, step: 0 });
+  const timer = useActivityTimer(state.step);
 
   const updateState = useCallback((updates: Partial<GameState>) => {
     setState(prev => ({ ...prev, ...updates }));
@@ -27,10 +30,12 @@ const Index = () => {
     goToStep(state.step + 1);
   }, [state.step, goToStep]);
 
+  const showHeader = state.step >= 0 && state.step <= 6;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      {state.step > 1 && state.step <= 6 && (
+      {showHeader && (
         <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm">
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -38,7 +43,15 @@ const Index = () => {
               <span className="font-semibold text-sm">Credix Ethics Lab</span>
               <div className="pulse-dot ml-1" />
             </div>
-            <StepIndicator currentStep={state.step} />
+            {state.step > 0 && state.step <= 6 && <StepIndicator currentStep={state.step} />}
+            <ActivityTimer
+              totalRemaining={timer.totalRemaining}
+              stepRemaining={timer.stepRemaining}
+              stepElapsed={timer.stepElapsed}
+              currentStep={state.step}
+              isOvertime={timer.isOvertime}
+              isStepOvertime={timer.isStepOvertime}
+            />
           </div>
         </header>
       )}

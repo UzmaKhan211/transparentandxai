@@ -359,7 +359,7 @@ const OnboardingScreen = ({ onNext }: OnboardingScreenProps) => {
             <p className="text-sm text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
               {passed
                 ? 'You have a solid understanding of the key concepts. You\'re ready to apply them in the simulation.'
-                : 'Review the explanations above to strengthen your understanding. You can still proceed — the simulation itself will reinforce these concepts.'}
+                : 'Some concepts could use another look — but don\'t worry! The simulation ahead will help reinforce these ideas as you apply them.'}
             </p>
             <button
               onClick={() => { sfx.navigate(); onNext(); }}

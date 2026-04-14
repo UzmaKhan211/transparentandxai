@@ -1,5 +1,17 @@
+export interface QuizResult {
+  questionId: string;
+  question: string;
+  selectedAnswer: string;
+  correctAnswer: string;
+  isCorrect: boolean;
+}
+
 export interface GameState {
   step: number;
+  // Step 0: Concept Check
+  quizResults: QuizResult[];
+  quizScore: number;
+  quizTotal: number;
   // Step 3: Diagnose
   missingInfo: string[];
   biggestProblem: string;
@@ -13,6 +25,9 @@ export interface GameState {
 
 export const initialGameState: GameState = {
   step: 1,
+  quizResults: [],
+  quizScore: 0,
+  quizTotal: 0,
   missingInfo: [],
   biggestProblem: '',
   freeResponse: '',

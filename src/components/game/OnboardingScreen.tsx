@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, ArrowRight, CheckCircle2, XCircle, ChevronRight, Info, MousePointerClick, MessageSquare, Lightbulb, Send } from 'lucide-react';
 import { sfx } from '@/hooks/useSoundEffects';
+import { QuizResult } from './GameState';
 
 interface OnboardingScreenProps {
   onNext: () => void;
+  onUpdate: (updates: { quizResults: QuizResult[]; quizScore: number; quizTotal: number }) => void;
 }
 
 interface ConceptQuestion {
@@ -78,13 +80,15 @@ const CONCEPT_QUESTIONS: ConceptQuestion[] = [
   },
 ];
 
-const OnboardingScreen = ({ onNext }: OnboardingScreenProps) => {
+const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
   const [phase, setPhase] = useState<'welcome' | 'quiz'>('welcome');
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
+  const [results, setResults] = useState<QuizResult[]>([]);
+  const resultsRef = useRef<QuizResult[]>([]);
 
   const handleStartQuiz = () => {
     sfx.navigate();
@@ -100,7 +104,17 @@ const OnboardingScreen = ({ onNext }: OnboardingScreenProps) => {
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null || showResult) return;
     setShowResult(true);
-    const isCorrect = selectedAnswer === CONCEPT_QUESTIONS[currentQ].correctIndex;
+    const q = CONCEPT_QUESTIONS[currentQ];
+    const isCorrect = selectedAnswer === q.correctIndex;
+    const result: QuizResult = {
+      questionId: q.id,
+      question: q.question,
+      selectedAnswer: q.options[selectedAnswer],
+      correctAnswer: q.options[q.correctIndex],
+      isCorrect,
+    };
+    resultsRef.current = [...resultsRef.current, result];
+    setResults(resultsRef.current);
     if (isCorrect) {
       setCorrectCount(prev => prev + 1);
       sfx.success();
@@ -117,6 +131,12 @@ const OnboardingScreen = ({ onNext }: OnboardingScreenProps) => {
       setShowResult(false);
     } else {
       setQuizComplete(true);
+      const allResults = resultsRef.current;
+      onUpdate({
+        quizResults: allResults,
+        quizScore: allResults.filter(r => r.isCorrect).length,
+        quizTotal: CONCEPT_QUESTIONS.length,
+      });
     }
   };
 

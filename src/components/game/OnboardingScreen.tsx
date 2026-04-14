@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, ArrowRight, CheckCircle2, XCircle, ChevronRight, Info, MousePointerClick, MessageSquare, Lightbulb, Send } from 'lucide-react';
 import { sfx } from '@/hooks/useSoundEffects';
@@ -88,6 +88,7 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
   const [correctCount, setCorrectCount] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
   const [results, setResults] = useState<QuizResult[]>([]);
+  const resultsRef = useRef<QuizResult[]>([]);
 
   const handleStartQuiz = () => {
     sfx.navigate();
@@ -112,7 +113,8 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
       correctAnswer: q.options[q.correctIndex],
       isCorrect,
     };
-    setResults(prev => [...prev, result]);
+    resultsRef.current = [...resultsRef.current, result];
+    setResults(resultsRef.current);
     if (isCorrect) {
       setCorrectCount(prev => prev + 1);
       sfx.success();
@@ -129,10 +131,10 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
       setShowResult(false);
     } else {
       setQuizComplete(true);
-      const finalScore = results.filter(r => r.isCorrect).length + (selectedAnswer === CONCEPT_QUESTIONS[currentQ].correctIndex ? 1 : 0);
+      const allResults = resultsRef.current;
       onUpdate({
-        quizResults: results,
-        quizScore: finalScore,
+        quizResults: allResults,
+        quizScore: allResults.filter(r => r.isCorrect).length,
         quizTotal: CONCEPT_QUESTIONS.length,
       });
     }

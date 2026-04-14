@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Mail, CheckCircle2, FileText } from 'lucide-react';
-import { GameState, EXPLANATION_OPTIONS, generatePreview, generateFeedback } from './GameState';
+import { GameState, EXPLANATION_OPTIONS, generatePreview, generateFeedback, QuizResult } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface ResponseExportProps {
@@ -25,7 +25,23 @@ function buildPlainTextReport(state: GameState): string {
   lines.push(sep);
 
   lines.push('');
-  lines.push('SECTION 1: DIAGNOSE THE PROBLEM');
+  lines.push('SECTION 1: CONCEPT CHECK');
+  lines.push(sep);
+  lines.push(`Score: ${state.quizScore} / ${state.quizTotal}`);
+  if (state.quizResults.length > 0) {
+    state.quizResults.forEach((r, i) => {
+      lines.push('');
+      lines.push(`Q${i + 1}. ${r.question}`);
+      lines.push(`  Student answered: ${r.selectedAnswer}`);
+      lines.push(`  Correct answer:   ${r.correctAnswer}`);
+      lines.push(`  Result: ${r.isCorrect ? '✓ Correct' : '✗ Incorrect'}`);
+    });
+  } else {
+    lines.push('  (No quiz data recorded)');
+  }
+
+  lines.push('');
+  lines.push('SECTION 2: DIAGNOSE THE PROBLEM');
   lines.push(sep);
   lines.push('');
   lines.push('Q1. What important information is missing?');
@@ -44,7 +60,7 @@ function buildPlainTextReport(state: GameState): string {
   lines.push(`  ${state.freeResponse || '(No response)'}`);
 
   lines.push('');
-  lines.push('SECTION 2: EXPLANATION DESIGN');
+  lines.push('SECTION 3: EXPLANATION DESIGN');
   lines.push(sep);
   lines.push('');
   lines.push('Selected elements (initial):');
@@ -71,7 +87,7 @@ function buildPlainTextReport(state: GameState): string {
   lines.push(sep);
 
   lines.push('');
-  lines.push('SECTION 3: STAKEHOLDER FEEDBACK');
+  lines.push('SECTION 4: STAKEHOLDER FEEDBACK');
   lines.push(sep);
   const feedback = generateFeedback(finalElements);
   feedback.forEach(fb => {
@@ -81,7 +97,7 @@ function buildPlainTextReport(state: GameState): string {
   });
 
   lines.push('');
-  lines.push('SECTION 4: REFLECTIONS');
+  lines.push('SECTION 5: REFLECTIONS');
   lines.push(sep);
   REFLECTION_QUESTIONS.forEach((q, i) => {
     lines.push('');

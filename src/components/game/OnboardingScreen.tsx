@@ -129,11 +129,10 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
       setShowResult(false);
     } else {
       setQuizComplete(true);
-      const finalResults = [...results];
-      // results has currentQ entries already from handleSubmitAnswer
+      const finalScore = results.filter(r => r.isCorrect).length + (selectedAnswer === CONCEPT_QUESTIONS[currentQ].correctIndex ? 1 : 0);
       onUpdate({
-        quizResults: finalResults,
-        quizScore: correctCount + (selectedAnswer === CONCEPT_QUESTIONS[currentQ].correctIndex ? 0 : 0),
+        quizResults: results,
+        quizScore: finalScore,
         quizTotal: CONCEPT_QUESTIONS.length,
       });
     }

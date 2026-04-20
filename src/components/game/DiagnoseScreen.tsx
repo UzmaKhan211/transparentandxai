@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Search } from 'lucide-react';
-import { GameState } from './GameState';
+import { DIAGNOSIS_STAGE_OPTIONS, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface DiagnoseScreenProps {
@@ -27,6 +27,12 @@ const BIGGEST_PROBLEM_OPTIONS = [
 ];
 
 const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenProps) => {
+  const toggleDiagnosisStage = (stage: string) => {
+    const current = state.diagnosisStages ?? [];
+    const updated = current.includes(stage) ? current.filter(option => option !== stage) : [...current, stage];
+    onUpdate({ diagnosisStages: updated });
+  };
+
   const toggleMissing = (option: string) => {
     const current = state.missingInfo;
     const updated = current.includes(option)
@@ -35,7 +41,7 @@ const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenP
     onUpdate({ missingInfo: updated });
   };
 
-  const canProceed = state.missingInfo.length > 0 && state.biggestProblem && state.freeResponse.trim().length > 10;
+  const canProceed = state.missingInfo.length > 0 && state.biggestProblem && state.freeResponse.trim().length > 10 && (state.diagnosisStages?.length ?? 0) > 0;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
@@ -104,6 +110,24 @@ const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenP
           rows={3}
           className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
         />
+      </div>
+
+      <div className="mb-8">
+        <p className="font-semibold mb-3">4. At which stage(s) of the system could this issue have been addressed? <span className="text-muted-foreground font-normal text-sm">(Select all that apply)</span></p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {DIAGNOSIS_STAGE_OPTIONS.map(stage => (
+            <div
+              key={stage}
+              onClick={() => toggleDiagnosisStage(stage)}
+              className={`checkbox-option flex items-center gap-3 ${(state.diagnosisStages ?? []).includes(stage) ? 'selected' : ''}`}
+            >
+              <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center ${(state.diagnosisStages ?? []).includes(stage) ? 'bg-primary border-primary' : 'border-muted-foreground'}`}>
+                {(state.diagnosisStages ?? []).includes(stage) && <span className="text-primary-foreground text-xs">✓</span>}
+              </div>
+              <span className="text-sm">{stage}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="flex justify-end">

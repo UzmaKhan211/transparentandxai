@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowLeft, Wrench, Eye } from 'lucide-react';
-import { EXPLANATION_OPTIONS, generatePreview, GameState } from './GameState';
+import { EXPLANATION_OPTIONS, generatePreview, getLifecycleCoverage, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface BuildScreenProps {
@@ -24,6 +24,7 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
 
   const preview = generatePreview(state.selectedElements);
   const canProceed = state.selectedElements.length > 0;
+  const lifecycleCoverage = getLifecycleCoverage(state.selectedElements);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto px-4">
@@ -61,7 +62,10 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
                 }`}>
                   {selected && <span className="text-primary-foreground text-xs">✓</span>}
                 </div>
-                <span className="text-sm">{opt.label}</span>
+                <div className="min-w-0">
+                  <span className="text-sm block">{opt.label}</span>
+                  <span className="mt-1 inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{opt.stage}</span>
+                </div>
               </div>
             );
           })}
@@ -92,6 +96,20 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
             )}
           </div>
         </div>
+      </div>
+
+      <div className="glass-panel mt-6 p-4">
+        <p className="section-label mb-2">Where does your solution act?</p>
+        <p className="text-sm text-secondary-foreground">
+          {lifecycleCoverage.addressed.length > 0
+            ? `Your design improves transparency at: ${lifecycleCoverage.addressed.join(' and ')}.`
+            : 'Select explanation elements to see which lifecycle stages you are improving.'}
+        </p>
+        {lifecycleCoverage.missing.length > 0 && (
+          <p className="text-xs text-muted-foreground mt-2">
+            {lifecycleCoverage.missing.join(' and ')} {(lifecycleCoverage.missing.length === 1 ? 'is' : 'are')} not addressed.
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end mt-8">

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { AlertTriangle, Shield, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Shield, ArrowRight, Database, Brain, MonitorSmartphone, RefreshCcw } from 'lucide-react';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface MissionBriefProps {
@@ -7,6 +7,13 @@ interface MissionBriefProps {
 }
 
 const MissionBrief = ({ onNext }: MissionBriefProps) => {
+  const lifecycleStages = [
+    { label: 'Data Stage', description: 'What information is collected and used', icon: Database },
+    { label: 'Model Stage', description: 'How the system makes decisions', icon: Brain },
+    { label: 'Deployment Stage', description: 'How decisions are shown to users', icon: MonitorSmartphone },
+    { label: 'Monitoring Stage', description: 'How decisions are reviewed and improved over time', icon: RefreshCcw },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -53,6 +60,32 @@ const MissionBrief = ({ onNext }: MissionBriefProps) => {
             </div>
           </div>
         </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.55 }}
+        className="glass-panel mt-5 w-full p-4 sm:p-5"
+      >
+        <p className="section-label mb-3">How AI Systems Work</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {lifecycleStages.map(stage => {
+            const Icon = stage.icon;
+            return (
+              <div key={stage.label} className="rounded-lg border border-border bg-muted/40 p-3">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Icon className="w-4 h-4 text-primary" />
+                  <p className="text-sm font-semibold text-foreground">{stage.label}</p>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{stage.description}</p>
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-xs text-muted-foreground mt-3">
+          Transparency and explainability can be improved at each of these stages.
+        </p>
       </motion.div>
 
       <motion.button

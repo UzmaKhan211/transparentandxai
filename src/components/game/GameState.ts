@@ -18,6 +18,7 @@ export interface GameState {
   missingInfo: string[];
   biggestProblem: string;
   freeResponse: string;
+  diagnosisStages: string[];
   // Step 4: Build
   selectedElements: string[];
   // Step 6: Reflect
@@ -35,23 +36,39 @@ export const initialGameState: GameState = {
   missingInfo: [],
   biggestProblem: '',
   freeResponse: '',
+  diagnosisStages: [],
   selectedElements: [],
   reflections: {},
   lifecycleNotes: {},
   revisedElements: [],
 };
 
+export const AI_LIFECYCLE_STAGES = [
+  'Data Stage',
+  'Model Stage',
+  'Deployment Stage',
+  'Monitoring Stage',
+] as const;
+
+export const DIAGNOSIS_STAGE_OPTIONS = [...AI_LIFECYCLE_STAGES];
+
+export const FINAL_LIFECYCLE_REFLECTIONS = [
+  'Which stage of the AI lifecycle did your redesign focus on the most?',
+  'Which stage still lacks transparency in your system?',
+  'What would you change earlier in the lifecycle to improve this decision?',
+] as const;
+
 export const EXPLANATION_OPTIONS = [
-  { id: 'why-denied', label: 'Explain why the application was denied', preview: 'Your application was not approved because your risk score exceeded our approval threshold.' },
-  { id: 'main-factors', label: 'Show the main factors that affected the decision', preview: 'The main factors were: high debt-to-income ratio (42%), multiple recent credit inquiries (4 in 3 months), and contract employment status.' },
-  { id: 'risk-score', label: 'Show the risk score and what it means', preview: 'Your risk score was 0.76 out of 1.0. Applications scoring above 0.70 are considered high risk. A lower score indicates lower risk.' },
-  { id: 'data-used', label: 'Explain what information was used', preview: 'We evaluated your annual income, credit score, existing debt, employment type, and recent credit activity.' },
-  { id: 'improve-steps', label: 'Suggest steps to improve eligibility', preview: 'You may improve your chances by reducing your existing debt, limiting new credit applications, or providing proof of stable long-term employment.' },
-  { id: 'request-review', label: 'Allow the user to request a review', preview: 'If you believe this decision is incorrect, you can request a manual review within 30 days by contacting our support team.' },
-  { id: 'correct-info', label: 'Allow the user to correct their information', preview: 'If any of the information used is inaccurate, you can submit updated documents through your account portal.' },
-  { id: 'simple-explanation', label: 'Provide a simple, easy-to-understand explanation', preview: 'In simple terms: we compared your debt to your income, and right now, the amount you owe is high relative to what you earn. This, combined with recent credit activity, increased your risk level.' },
-  { id: 'detailed-explanation', label: 'Provide a more detailed explanation', preview: 'Your debt-to-income ratio of 42% exceeds our preferred maximum of 35%. Additionally, 4 credit inquiries in 3 months suggests active credit-seeking behavior, which is a risk signal. Contract employment carries a stability risk modifier of 1.2x compared to full-time employment.' },
-  { id: 'not-considered', label: 'Explain what the system does not take into account', preview: 'Please note: our system does not consider your payment history, savings, or personal circumstances. These factors may be considered if you request a manual review.' },
+  { id: 'why-denied', label: 'Explain why the application was denied', stage: 'Deployment Stage', preview: 'Your application was not approved because your risk score exceeded our approval threshold.' },
+  { id: 'main-factors', label: 'Show the main factors that affected the decision', stage: 'Model Stage', preview: 'The main factors were: high debt-to-income ratio (42%), multiple recent credit inquiries (4 in 3 months), and contract employment status.' },
+  { id: 'risk-score', label: 'Show the risk score and what it means', stage: 'Model Stage', preview: 'Your risk score was 0.76 out of 1.0. Applications scoring above 0.70 are considered high risk. A lower score indicates lower risk.' },
+  { id: 'data-used', label: 'Explain what information was used', stage: 'Data Stage', preview: 'We evaluated your annual income, credit score, existing debt, employment type, and recent credit activity.' },
+  { id: 'improve-steps', label: 'Suggest steps to improve eligibility', stage: 'Deployment Stage', preview: 'You may improve your chances by reducing your existing debt, limiting new credit applications, or providing proof of stable long-term employment.' },
+  { id: 'request-review', label: 'Allow the user to request a review', stage: 'Monitoring Stage', preview: 'If you believe this decision is incorrect, you can request a manual review within 30 days by contacting our support team.' },
+  { id: 'correct-info', label: 'Allow the user to correct their information', stage: 'Data Stage', preview: 'If any of the information used is inaccurate, you can submit updated documents through your account portal.' },
+  { id: 'simple-explanation', label: 'Provide a simple, easy-to-understand explanation', stage: 'Deployment Stage', preview: 'In simple terms: we compared your debt to your income, and right now, the amount you owe is high relative to what you earn. This, combined with recent credit activity, increased your risk level.' },
+  { id: 'detailed-explanation', label: 'Provide a more detailed explanation', stage: 'Model Stage', preview: 'Your debt-to-income ratio of 42% exceeds our preferred maximum of 35%. Additionally, 4 credit inquiries in 3 months suggests active credit-seeking behavior, which is a risk signal. Contract employment carries a stability risk modifier of 1.2x compared to full-time employment.' },
+  { id: 'not-considered', label: 'Explain what the system does not take into account', stage: 'Monitoring Stage', preview: 'Please note: our system does not consider your payment history, savings, or personal circumstances. These factors may be considered if you request a manual review.' },
 ];
 
 export function generatePreview(selectedIds: string[]): string {
@@ -69,6 +86,39 @@ export interface FeedbackResult {
   role: string;
   sentiment: 'positive' | 'warning' | 'negative';
   message: string;
+}
+
+export function getLifecycleCoverage(selectedIds: string[]) {
+  const addressed = Array.from(new Set(EXPLANATION_OPTIONS.filter(option => selectedIds.includes(option.id)).map(option => option.stage)));
+  const missing = AI_LIFECYCLE_STAGES.filter(stage => !addressed.includes(stage));
+
+  return { addressed, missing };
+}
+
+export function generateLifecycleInsight(selectedIds: string[]): string {
+  const { addressed, missing } = getLifecycleCoverage(selectedIds);
+
+  if (addressed.length === 0) {
+    return 'Your design has not yet improved transparency at any stage of the AI lifecycle.';
+  }
+
+  if (addressed.length === 1) {
+    return `Your design improves transparency at the ${addressed[0]}, but earlier and later stages remain unclear.`;
+  }
+
+  if (missing.length === 0) {
+    return 'Your design touches all four lifecycle stages, creating a more complete transparency strategy.';
+  }
+
+  if (missing.includes('Monitoring Stage')) {
+    return `Your design improves transparency at ${addressed.join(' and ')}, but Monitoring Stage improvements are still missing.`;
+  }
+
+  if (missing.includes('Data Stage')) {
+    return `Users now understand more of the outcome, but there is still no mechanism to address issues at the Data Stage.`;
+  }
+
+  return `Your design improves transparency at ${addressed.join(' and ')}, but ${missing.join(' and ')} still need attention.`;
 }
 
 export function generateFeedback(selectedIds: string[]): FeedbackResult[] {

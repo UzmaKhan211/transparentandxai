@@ -28,6 +28,8 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
   const [showRevise, setShowRevise] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [expandedFeedback, setExpandedFeedback] = useState<string | null>(null);
+  const reflections = state.reflections ?? {};
+  const lifecycleNotes = state.lifecycleNotes ?? {};
   const [localElements, setLocalElements] = useState(
     state.revisedElements.length > 0 ? state.revisedElements : [...state.selectedElements]
   );
@@ -62,8 +64,8 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
   const currentElements = state.revisedElements.length > 0 ? state.revisedElements : state.selectedElements;
   const preview = generatePreview(localElements.length > 0 ? localElements : currentElements);
   const feedback = generateFeedback(localElements.length > 0 ? localElements : currentElements);
-  const allReflectionsDone = REFLECTION_QUESTIONS.every(q => (state.reflections[q] || '').trim().length > 5);
-  const allLifecycleDone = LIFECYCLE_PROMPTS.every(q => (state.lifecycleNotes[q] || '').trim().length > 5);
+  const allReflectionsDone = REFLECTION_QUESTIONS.every(q => (reflections[q] || '').trim().length > 5);
+  const allLifecycleDone = LIFECYCLE_PROMPTS.every(q => (lifecycleNotes[q] || '').trim().length > 5);
 
   const toggleFeedbackExpand = (persona: string) => {
     setExpandedFeedback(prev => (prev === persona ? null : persona));
@@ -234,8 +236,8 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
               <div key={q}>
                 <p className="text-sm font-medium mb-2">{i + 1}. {q}</p>
                 <textarea
-                  value={state.reflections[q] || ''}
-                  onChange={e => onUpdate({ reflections: { ...state.reflections, [q]: e.target.value } })}
+                  value={reflections[q] || ''}
+                  onChange={e => onUpdate({ reflections: { ...reflections, [q]: e.target.value } })}
                   placeholder="Type your reflection..."
                   rows={2}
                   className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
@@ -256,8 +258,8 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
               <div key={q}>
                 <p className="text-sm font-medium mb-2">{i + 1}. {q}</p>
                 <textarea
-                  value={state.lifecycleNotes[q] || ''}
-                  onChange={e => onUpdate({ lifecycleNotes: { ...state.lifecycleNotes, [q]: e.target.value } })}
+                  value={lifecycleNotes[q] || ''}
+                  onChange={e => onUpdate({ lifecycleNotes: { ...lifecycleNotes, [q]: e.target.value } })}
                   placeholder="Type your response..."
                   rows={2}
                   className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"

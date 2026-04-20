@@ -12,6 +12,8 @@ export interface GameState {
   quizResults: QuizResult[];
   quizScore: number;
   quizTotal: number;
+  // Step 2: Evidence
+  evidenceReviewedIds: string[];
   // Step 3: Diagnose
   missingInfo: string[];
   biggestProblem: string;
@@ -20,6 +22,7 @@ export interface GameState {
   selectedElements: string[];
   // Step 6: Reflect
   reflections: Record<string, string>;
+  lifecycleNotes: Record<string, string>;
   revisedElements: string[];
 }
 
@@ -28,11 +31,13 @@ export const initialGameState: GameState = {
   quizResults: [],
   quizScore: 0,
   quizTotal: 0,
+  evidenceReviewedIds: [],
   missingInfo: [],
   biggestProblem: '',
   freeResponse: '',
   selectedElements: [],
   reflections: {},
+  lifecycleNotes: {},
   revisedElements: [],
 };
 

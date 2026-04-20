@@ -15,6 +15,7 @@ const EVIDENCE_CARDS = [
     id: 'complaint',
     icon: MessageSquare,
     label: 'User Complaint',
+    stage: 'Deployment Stage',
     color: 'text-danger',
     content: `"I applied for a loan and was rejected almost instantly. The message just said I was 'high risk,' but I don't know what that means. My income is steady and I've never missed a payment before. I need to understand why I was denied and if there's anything I can do about it."`,
   },
@@ -22,6 +23,7 @@ const EVIDENCE_CARDS = [
     id: 'message',
     icon: Mail,
     label: 'Message Sent to User',
+    stage: 'Deployment Stage',
     color: 'text-warning',
     content: `"Your loan application has been denied based on an automated risk assessment. At this time, we are unable to approve your request."`,
   },
@@ -29,6 +31,7 @@ const EVIDENCE_CARDS = [
     id: 'applicant',
     icon: User,
     label: 'Applicant Information',
+    stage: 'Data Stage',
     color: 'text-info',
     content: null,
     table: [
@@ -44,6 +47,7 @@ const EVIDENCE_CARDS = [
     id: 'decision',
     icon: Cpu,
     label: 'System Decision',
+    stage: 'Model Stage',
     color: 'text-primary',
     content: null,
     table: [
@@ -57,6 +61,7 @@ const EVIDENCE_CARDS = [
     id: 'factors',
     icon: BarChart3,
     label: 'What Influenced the Decision',
+    stage: 'Model Stage',
     color: 'text-accent',
     content: null,
     lists: {
@@ -68,6 +73,7 @@ const EVIDENCE_CARDS = [
     id: 'internal',
     icon: FileText,
     label: 'Internal Note',
+    stage: 'Monitoring Stage',
     color: 'text-muted-foreground',
     content: `"If the risk score is above the cutoff, the system can deny the application automatically without a manual review."`,
   },
@@ -75,6 +81,7 @@ const EVIDENCE_CARDS = [
     id: 'policy',
     icon: BookOpen,
     label: 'Explanation Policy',
+    stage: 'Monitoring Stage',
     color: 'text-evidence',
     content: `"Users should receive a general reason for denial. Detailed system information is not always shared, to prevent misuse or manipulation of the system."`,
   },
@@ -127,7 +134,10 @@ const EvidenceBoard = ({ state, onUpdate, onNext }: EvidenceBoardProps) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {reviewedCards.map(card => (
               <div key={card.id} className="rounded-lg border border-border bg-muted/50 p-3">
-                <p className="text-sm font-medium text-foreground mb-1">{card.label}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-medium text-foreground">{card.label}</p>
+                  <span className="rounded-full border border-border bg-background px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{card.stage}</span>
+                </div>
                 {card.content && <p className="text-xs text-muted-foreground line-clamp-3">{card.content.replaceAll('"', '')}</p>}
                 {card.table && (
                   <div className="space-y-1">
@@ -164,6 +174,7 @@ const EvidenceBoard = ({ state, onUpdate, onNext }: EvidenceBoardProps) => {
               </div>
               <div>
                 <p className="font-medium text-sm">{card.label}</p>
+                  <p className="mt-1 inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{card.stage}</p>
                 {viewed && <p className="text-xs text-primary mt-1">✓ Reviewed</p>}
               </div>
             </motion.div>
@@ -195,6 +206,7 @@ const EvidenceBoard = ({ state, onUpdate, onNext }: EvidenceBoardProps) => {
                   <div className="flex items-center gap-2">
                     <Icon className={`w-5 h-5 ${card.color}`} />
                     <h3 className="font-bold">{card.label}</h3>
+                     <span className="rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{card.stage}</span>
                   </div>
                   <button onClick={() => setExpandedCard(null)} className="p-1 rounded hover:bg-muted">
                     <X className="w-4 h-4 text-muted-foreground" />

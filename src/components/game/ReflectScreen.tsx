@@ -18,6 +18,12 @@ const REFLECTION_QUESTIONS = [
   'Do you think your explanation fully solves the problem? Why or why not?',
 ];
 
+const LIFECYCLE_PROMPTS = [
+  'Design: What transparency or explainability choice should be built in before deployment?',
+  'Deployment: What should users be told when an AI decision is shown to them?',
+  'Monitoring: What should a team keep checking after launch to make the system more accountable?',
+];
+
 const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScreenProps) => {
   const [showRevise, setShowRevise] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -57,6 +63,7 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
   const preview = generatePreview(localElements.length > 0 ? localElements : currentElements);
   const feedback = generateFeedback(localElements.length > 0 ? localElements : currentElements);
   const allReflectionsDone = REFLECTION_QUESTIONS.every(q => (state.reflections[q] || '').trim().length > 5);
+  const allLifecycleDone = LIFECYCLE_PROMPTS.every(q => (state.lifecycleNotes[q] || '').trim().length > 5);
 
   const toggleFeedbackExpand = (persona: string) => {
     setExpandedFeedback(prev => (prev === persona ? null : persona));
@@ -221,7 +228,7 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
               <p className="font-semibold">Reflection Questions</p>
             </div>
             <p className="text-sm text-muted-foreground -mt-3">
-              Now that you've finalized your explanation, reflect on your design decisions. Each response needs at least 6 characters.
+               Now that you've finalized your explanation, reflect on your design decisions. Each response needs at least 6 characters.
             </p>
             {REFLECTION_QUESTIONS.map((q, i) => (
               <div key={q}>
@@ -237,18 +244,40 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
             ))}
           </div>
 
+          <div className="space-y-6 mb-8">
+            <div className="flex items-center gap-2">
+              <PenLine className="w-4 h-4 text-primary" />
+              <p className="font-semibold">AI Lifecycle Governance</p>
+            </div>
+            <p className="text-sm text-muted-foreground -mt-3">
+              Connect this case to where transparency and explainability matter across the AI lifecycle.
+            </p>
+            {LIFECYCLE_PROMPTS.map((q, i) => (
+              <div key={q}>
+                <p className="text-sm font-medium mb-2">{i + 1}. {q}</p>
+                <textarea
+                  value={state.lifecycleNotes[q] || ''}
+                  onChange={e => onUpdate({ lifecycleNotes: { ...state.lifecycleNotes, [q]: e.target.value } })}
+                  placeholder="Type your response..."
+                  rows={2}
+                  className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+              </div>
+            ))}
+          </div>
+
           <div className="flex justify-center mb-10">
             <button
               onClick={() => { sfx.submit(); onSubmitAll(); }}
-              disabled={!allReflectionsDone}
-              className={`btn-mission flex items-center gap-2 text-base px-10 py-4 ${!allReflectionsDone ? 'opacity-40 cursor-not-allowed' : ''}`}
+              disabled={!allReflectionsDone || !allLifecycleDone}
+              className={`btn-mission flex items-center gap-2 text-base px-10 py-4 ${!allReflectionsDone || !allLifecycleDone ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
               <Send className="w-4 h-4" />
               Submit Responses
             </button>
           </div>
-          {!allReflectionsDone && (
-            <p className="text-xs text-muted-foreground text-center -mt-6 mb-8">Complete all reflection questions to submit</p>
+          {(!allReflectionsDone || !allLifecycleDone) && (
+            <p className="text-xs text-muted-foreground text-center -mt-6 mb-8">Complete all reflection and lifecycle questions to submit</p>
           )}
         </motion.div>
       )}

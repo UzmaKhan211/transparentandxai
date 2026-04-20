@@ -15,6 +15,12 @@ const REFLECTION_QUESTIONS = [
   'Do you think your explanation fully solves the problem? Why or why not?',
 ];
 
+const LIFECYCLE_PROMPTS = [
+  'Design: What transparency or explainability choice should be built in before deployment?',
+  'Deployment: What should users be told when an AI decision is shown to them?',
+  'Monitoring: What should a team keep checking after launch to make the system more accountable?',
+];
+
 function buildPlainTextReport(state: GameState): string {
   const lines: string[] = [];
   const sep = '─'.repeat(50);
@@ -103,6 +109,15 @@ function buildPlainTextReport(state: GameState): string {
     lines.push('');
     lines.push(`Q${i + 1}. ${q}`);
     lines.push(`  ${state.reflections[q] || '(No response)'}`);
+  });
+
+  lines.push('');
+  lines.push('SECTION 6: AI LIFECYCLE GOVERNANCE');
+  lines.push(sep);
+  LIFECYCLE_PROMPTS.forEach((q, i) => {
+    lines.push('');
+    lines.push(`Q${i + 1}. ${q}`);
+    lines.push(`  ${state.lifecycleNotes[q] || '(No response)'}`);
   });
 
   lines.push('');

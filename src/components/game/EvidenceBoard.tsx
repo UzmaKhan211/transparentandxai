@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Mail, User, Cpu, BarChart3, FileText, BookOpen, X, ArrowRight } from 'lucide-react';
 import { sfx } from '@/hooks/useSoundEffects';
+import { GameState } from './GameState';
 
 interface EvidenceBoardProps {
+  state: GameState;
+  onUpdate: (updates: Partial<GameState>) => void;
   onNext: () => void;
 }
 
@@ -77,13 +80,33 @@ const EVIDENCE_CARDS = [
   },
 ];
 
-const EvidenceBoard = ({ onNext }: EvidenceBoardProps) => {
+const EvidenceBoard = ({ state, onUpdate, onNext }: EvidenceBoardProps) => {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [viewedCards, setViewedCards] = useState<Set<string>>(new Set());
+  const [viewedCards, setViewedCards] = useState<Set<string>>(() => new Set(state.evidenceReviewedIds));
+
+  useEffect(() => {
+    setViewedCards(new Set(state.evidenceReviewedIds));
+  }, [state.evidenceReviewedIds]);
+
+  const reviewedCards = useMemo(
+    () => EVIDENCE_CARDS.filter(card => viewedCards.has(card.id)),
+    [viewedCards]
+  );
 
   const handleCardClick = (id: string) => {
     setExpandedCard(id);
-    setViewedCards(prev => { const s = new Set(prev); const isNew = !s.has(id); s.add(id); if (isNew) sfx.select(); else sfx.click(); return s; });
+    setViewedCards(prev => {
+      const s = new Set(prev);
+      const isNew = !s.has(id);
+      s.add(id);
+      if (isNew) {
+        sfx.select();
+        onUpdate({ evidenceReviewedIds: Array.from(s) });
+      } else {
+        sfx.click();
+      }
+      return s;
+    });
   };
 
   const allViewed = viewedCards.size === EVIDENCE_CARDS.length;
@@ -97,6 +120,31 @@ const EvidenceBoard = ({ onNext }: EvidenceBoardProps) => {
           <span className="text-primary ml-2 font-mono text-xs">{viewedCards.size}/{EVIDENCE_CARDS.length} reviewed</span>
         </p>
       </div>
+
+      {reviewedCards.length > 0 && (
+        <div className="glass-panel p-4 mb-6">
+          <p className="section-label mb-3">Reviewed Evidence Snapshot</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {reviewedCards.map(card => (
+              <div key={card.id} className="rounded-lg border border-border bg-muted/50 p-3">
+                <p className="text-sm font-medium text-foreground mb-1">{card.label}</p>
+                {card.content && <p className="text-xs text-muted-foreground line-clamp-3">{card.content.replaceAll('"', '')}</p>}
+                {card.table && (
+                  <div className="space-y-1">
+                    {card.table.slice(0, 2).map(([key, val]) => (
+                      <div key={key} className="flex items-start justify-between gap-3 text-xs">
+                        <span className="text-muted-foreground">{key}</span>
+                        <span className="font-mono text-foreground text-right">{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {card.lists && <p className="text-xs text-muted-foreground">High weight: {card.lists.high[0]}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {EVIDENCE_CARDS.map((card, i) => {
@@ -210,7 +258,7 @@ const EvidenceBoard = ({ onNext }: EvidenceBoardProps) => {
         </button>
       </div>
       {!allViewed && (
-        <p className="text-xs text-muted-foreground text-right mt-2">Review all evidence cards to continue</p>
+          <p className="text-xs text-muted-foreground text-right mt-2">Review all evidence cards once to unlock the next step — your progress stays saved if you come back.</p>
       )}
     </motion.div>
   );

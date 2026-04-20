@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PenLine, ArrowLeft, Eye, ChevronDown, ChevronUp, Send, Users } from 'lucide-react';
-import { EXPLANATION_OPTIONS, generatePreview, generateFeedback, GameState } from './GameState';
+import { EXPLANATION_OPTIONS, FINAL_LIFECYCLE_REFLECTIONS, generatePreview, generateFeedback, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface ReflectScreenProps {
@@ -16,12 +16,6 @@ const REFLECTION_QUESTIONS = [
   'How did you decide what information to include or leave out?',
   'How did you balance being clear with not overwhelming the user?',
   'Do you think your explanation fully solves the problem? Why or why not?',
-];
-
-const LIFECYCLE_PROMPTS = [
-  'Design: What transparency or explainability choice should be built in before deployment?',
-  'Deployment: What should users be told when an AI decision is shown to them?',
-  'Monitoring: What should a team keep checking after launch to make the system more accountable?',
 ];
 
 const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScreenProps) => {
@@ -65,7 +59,7 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
   const preview = generatePreview(localElements.length > 0 ? localElements : currentElements);
   const feedback = generateFeedback(localElements.length > 0 ? localElements : currentElements);
   const allReflectionsDone = REFLECTION_QUESTIONS.every(q => (reflections[q] || '').trim().length > 5);
-  const allLifecycleDone = LIFECYCLE_PROMPTS.every(q => (lifecycleNotes[q] || '').trim().length > 5);
+  const allLifecycleDone = FINAL_LIFECYCLE_REFLECTIONS.every(q => (lifecycleNotes[q] || '').trim().length > 5);
 
   const toggleFeedbackExpand = (persona: string) => {
     setExpandedFeedback(prev => (prev === persona ? null : persona));
@@ -254,7 +248,7 @@ const ReflectScreen = ({ state, onUpdate, onGoToStep, onSubmitAll }: ReflectScre
             <p className="text-sm text-muted-foreground -mt-3">
               Connect this case to where transparency and explainability matter across the AI lifecycle.
             </p>
-            {LIFECYCLE_PROMPTS.map((q, i) => (
+            {FINAL_LIFECYCLE_REFLECTIONS.map((q, i) => (
               <div key={q}>
                 <p className="text-sm font-medium mb-2">{i + 1}. {q}</p>
                 <textarea

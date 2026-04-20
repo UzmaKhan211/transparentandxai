@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Mail, CheckCircle2, FileText } from 'lucide-react';
-import { GameState, EXPLANATION_OPTIONS, generatePreview, generateFeedback, QuizResult } from './GameState';
+import { GameState, EXPLANATION_OPTIONS, FINAL_LIFECYCLE_REFLECTIONS, generatePreview, generateFeedback } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface ResponseExportProps {
@@ -13,12 +13,6 @@ const REFLECTION_QUESTIONS = [
   'How did you decide what information to include or leave out?',
   'How did you balance being clear with not overwhelming the user?',
   'Do you think your explanation fully solves the problem? Why or why not?',
-];
-
-const LIFECYCLE_PROMPTS = [
-  'Design: What transparency or explainability choice should be built in before deployment?',
-  'Deployment: What should users be told when an AI decision is shown to them?',
-  'Monitoring: What should a team keep checking after launch to make the system more accountable?',
 ];
 
 function buildPlainTextReport(state: GameState): string {
@@ -64,6 +58,14 @@ function buildPlainTextReport(state: GameState): string {
   lines.push('');
   lines.push('Q3. Why the current explanation is not helpful:');
   lines.push(`  ${state.freeResponse || '(No response)'}`);
+
+  lines.push('');
+  lines.push('Q4. Which lifecycle stage(s) could have addressed the issue?');
+  if ((state.diagnosisStages ?? []).length > 0) {
+    (state.diagnosisStages ?? []).forEach(stage => lines.push(`  • ${stage}`));
+  } else {
+    lines.push('  (No selections made)');
+  }
 
   lines.push('');
   lines.push('SECTION 3: EXPLANATION DESIGN');
@@ -114,10 +116,10 @@ function buildPlainTextReport(state: GameState): string {
   lines.push('');
   lines.push('SECTION 6: AI LIFECYCLE GOVERNANCE');
   lines.push(sep);
-  LIFECYCLE_PROMPTS.forEach((q, i) => {
+  FINAL_LIFECYCLE_REFLECTIONS.forEach((q, i) => {
     lines.push('');
     lines.push(`Q${i + 1}. ${q}`);
-    lines.push(`  ${state.lifecycleNotes[q] || '(No response)'}`);
+    lines.push(`  ${(state.lifecycleNotes ?? {})[q] || '(No response)'}`);
   });
 
   lines.push('');

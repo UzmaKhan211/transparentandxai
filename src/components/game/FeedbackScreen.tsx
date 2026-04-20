@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Users } from 'lucide-react';
-import { generateFeedback, GameState } from './GameState';
+import { ArrowRight, ArrowLeft, Users, Layers3 } from 'lucide-react';
+import { generateFeedback, generateLifecycleInsight, getLifecycleCoverage, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface FeedbackScreenProps {
@@ -11,6 +11,8 @@ interface FeedbackScreenProps {
 
 const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
   const feedback = generateFeedback(state.selectedElements);
+  const lifecycleInsight = generateLifecycleInsight(state.selectedElements);
+  const lifecycleCoverage = getLifecycleCoverage(state.selectedElements);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
@@ -52,6 +54,17 @@ const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
             <p className="text-sm text-secondary-foreground italic">"{fb.message}"</p>
           </motion.div>
         ))}
+      </div>
+
+      <div className="glass-panel mt-6 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Layers3 className="w-4 h-4 text-primary" />
+          <p className="section-label">Lifecycle Insight</p>
+        </div>
+        <p className="text-sm text-secondary-foreground">{lifecycleInsight}</p>
+        {lifecycleCoverage.addressed.length > 0 && (
+          <p className="text-xs text-muted-foreground mt-2">Addressed: {lifecycleCoverage.addressed.join(', ')}</p>
+        )}
       </div>
 
       <div className="flex justify-end mt-8">

@@ -17,7 +17,7 @@ const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
       <button
-        onClick={() => { sfx.navigate(); onGoToStep(4); }}
+        onClick={() => { sfx.navigate(); onGoToStep(5); }}
         className="btn-outline-game flex items-center gap-2 text-sm mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />

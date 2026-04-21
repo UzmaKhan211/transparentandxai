@@ -29,11 +29,11 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto px-4">
       <button
-        onClick={() => { sfx.navigate(); onGoToStep(3); }}
+        onClick={() => { sfx.navigate(); onGoToStep(4); }}
         className="btn-outline-game flex items-center gap-2 text-sm mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Diagnosis
+        Back to System Map
       </button>
       <div className="flex items-center gap-2 mb-2">
         <Wrench className="w-5 h-5 text-primary" />

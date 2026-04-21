@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Mail, CheckCircle2, FileText } from 'lucide-react';
 import { GameState, EXPLANATION_OPTIONS, FINAL_LIFECYCLE_REFLECTIONS, generatePreview, generateFeedback } from './GameState';
+import { SYSTEM_MAP_ISSUES } from './SystemMapData';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface ResponseExportProps {
@@ -60,12 +61,24 @@ function buildPlainTextReport(state: GameState): string {
   lines.push(`  ${state.freeResponse || '(No response)'}`);
 
   lines.push('');
-  lines.push('Q4. Which lifecycle stage(s) could have addressed the issue?');
-  if ((state.diagnosisStages ?? []).length > 0) {
-    (state.diagnosisStages ?? []).forEach(stage => lines.push(`  • ${stage}`));
-  } else {
-    lines.push('  (No selections made)');
-  }
+  lines.push('SECTION 2B: FIX THE SYSTEM MAP');
+  lines.push(sep);
+  const smAnswers = state.systemMapAnswers ?? {};
+  const smEvals = state.systemMapEvaluations ?? [];
+  const correctMatches = smEvals.filter(e => e.combinationCorrect).length;
+  lines.push(`Correct matches: ${correctMatches} / ${SYSTEM_MAP_ISSUES.length}`);
+  lines.push(`Attempts: ${state.systemMapAttempts ?? 0}`);
+  lines.push(`Time spent: ${state.systemMapTimeSpent ?? 0}s`);
+  SYSTEM_MAP_ISSUES.forEach((issue, i) => {
+    const ans = smAnswers[issue.id];
+    const ev = smEvals.find(e => e.issueId === issue.id);
+    const fix = issue.fixes.find(f => f.id === ans?.fixId);
+    lines.push('');
+    lines.push(`Issue ${i + 1}: ${issue.text}`);
+    lines.push(`  Stage selected: ${ans?.stage || '(none)'}  ${ev?.stageCorrect ? '✓' : '✗'}`);
+    lines.push(`  Fix selected:   ${fix?.label || '(none)'}  ${ev?.fixCorrect ? '✓' : '✗'}`);
+    lines.push(`  Combination:    ${ev?.combinationCorrect ? '✓ Correct' : '✗ Incorrect'}`);
+  });
 
   lines.push('');
   lines.push('SECTION 3: EXPLANATION DESIGN');

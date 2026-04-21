@@ -5,6 +5,7 @@ const STEPS = [
   'Brief',
   'Evidence',
   'Diagnose',
+  'System Map',
   'Build',
   'Test',
   'Reflect',

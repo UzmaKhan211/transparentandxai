@@ -117,9 +117,9 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
     setResults(resultsRef.current);
     if (isCorrect) {
       setCorrectCount(prev => prev + 1);
-      sfx.success();
+      sfx.correct();
     } else {
-      sfx.click();
+      sfx.wrong();
     }
   };
 

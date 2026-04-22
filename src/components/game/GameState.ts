@@ -19,11 +19,10 @@ export interface GameState {
   biggestProblem: string;
   freeResponse: string;
   diagnosisStages: string[];
-  // Step 4: Fix the System Map
-  systemMapAnswers: Record<string, { stage: string; fixId: string }>;
-  systemMapEvaluations: { issueId: string; stageCorrect: boolean; fixCorrect: boolean; combinationCorrect: boolean }[];
-  systemMapAttempts: number;
+  // Step 4: Fix the System Map (open-ended)
+  systemMapResponses: Record<string, { stage: string; explanation: string }>;
   systemMapTimeSpent: number;
+  systemMapSubmitted: boolean;
   // Step 5: Build
   selectedElements: string[];
   // Step 6: Reflect
@@ -42,10 +41,9 @@ export const initialGameState: GameState = {
   biggestProblem: '',
   freeResponse: '',
   diagnosisStages: [],
-  systemMapAnswers: {},
-  systemMapEvaluations: [],
-  systemMapAttempts: 0,
+  systemMapResponses: {},
   systemMapTimeSpent: 0,
+  systemMapSubmitted: false,
   selectedElements: [],
   reflections: {},
   lifecycleNotes: {},

@@ -66,13 +66,21 @@ function buildPlainTextReport(state: GameState): string {
   const smResponses = state.systemMapResponses ?? {};
   lines.push(`Time spent: ${state.systemMapTimeSpent ?? 0}s`);
   lines.push(`Submitted: ${state.systemMapSubmitted ? 'Yes' : 'No'}`);
+  let smCorrect = 0;
   SYSTEM_MAP_ISSUES.forEach((issue, i) => {
     const r = smResponses[issue.id];
+    const match = r?.stage === issue.suggestedStage;
+    if (match) smCorrect++;
     lines.push('');
     lines.push(`Issue ${i + 1}: ${issue.text}`);
-    lines.push(`  Stage selected: ${r?.stage || '(none)'}`);
-    lines.push(`  Explanation:    ${r?.explanation || '(no response)'}`);
+    lines.push(`  Stage selected:   ${r?.stage || '(none)'}`);
+    lines.push(`  Suggested stage:  ${issue.suggestedStage}`);
+    lines.push(`  Result:           ${match ? '✓ Matches suggested stage' : '⚠ Differs from suggested stage'}`);
+    lines.push(`  Rationale:        ${issue.rationale}`);
+    lines.push(`  Student explanation: ${r?.explanation || '(no response)'}`);
   });
+  lines.push('');
+  lines.push(`Stage-match summary: ${smCorrect} / ${SYSTEM_MAP_ISSUES.length} matched the suggested stage`);
 
   lines.push('');
   lines.push('SECTION 3: EXPLANATION DESIGN');

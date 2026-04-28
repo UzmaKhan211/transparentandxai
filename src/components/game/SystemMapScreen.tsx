@@ -161,17 +161,55 @@ const SystemMapScreen = ({ state, onUpdate, onNext, onGoToStep }: SystemMapScree
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-4 mt-6"
+          className="glass-panel p-4 mt-6 space-y-4"
         >
-          <p className="section-label mb-2">System Thinking Insight</p>
-          <ul className="text-sm text-secondary-foreground space-y-1">
-            {insights.map((msg, i) => (
-              <li key={i}>• {msg}</li>
-            ))}
-          </ul>
-          <p className="mt-3 text-sm text-secondary-foreground italic">
-            You've explored where transparency issues exist across the system. Next, redesign the explanation shown to the user.
-          </p>
+          <div>
+            <p className="section-label mb-2">Suggested Answers & Rationale</p>
+            <p className="text-xs text-muted-foreground mb-3">
+              There can be more than one valid stage, but here is the stage most directly responsible for each issue.
+            </p>
+            <div className="space-y-3">
+              {SYSTEM_MAP_ISSUES.map((issue, i) => {
+                const r = responses[issue.id];
+                const match = r?.stage === issue.suggestedStage;
+                return (
+                  <div
+                    key={issue.id}
+                    className={`rounded-md border p-3 ${
+                      match ? 'border-[hsl(var(--success))]/40 bg-[hsl(var(--success))]/5' : 'border-amber-500/40 bg-amber-500/5'
+                    }`}
+                  >
+                    <p className="text-sm font-medium text-foreground mb-1.5">
+                      <span className="font-mono text-xs text-muted-foreground mr-1">#{i + 1}</span>
+                      {issue.text}
+                    </p>
+                    <p className="text-xs text-secondary-foreground">
+                      <span className="font-semibold">Your selection:</span> {r?.stage || '(none)'}{' '}
+                      <span className={match ? 'text-[hsl(var(--success))]' : 'text-amber-600'}>
+                        {match ? '✓ matches suggested stage' : '⚠ differs from suggested stage'}
+                      </span>
+                    </p>
+                    <p className="text-xs text-secondary-foreground mt-1">
+                      <span className="font-semibold">Suggested stage:</span> {issue.suggestedStage}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-snug">{issue.rationale}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="section-label mb-2">System Thinking Insight</p>
+            <ul className="text-sm text-secondary-foreground space-y-1">
+              {insights.map((msg, i) => (
+                <li key={i}>• {msg}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-secondary-foreground italic">
+              You've explored where transparency issues exist across the system. Next, redesign the explanation shown to the user.
+            </p>
+          </div>
         </motion.div>
       )}
 

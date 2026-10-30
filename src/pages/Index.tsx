@@ -38,7 +38,7 @@ const Index = () => {
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-primary" />
-              <span className="font-semibold text-sm">Credix Ethics Lab</span>
+              <span className="font-semibold text-sm whitespace-nowrap">Credix Ethics Lab</span>
               <div className="pulse-dot ml-1" />
             </div>
             <StepIndicator currentStep={state.step} />

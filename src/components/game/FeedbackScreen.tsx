@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Users, Layers3 } from 'lucide-react';
-import { generateFeedback, generateLifecycleInsight, getLifecycleCoverage, GameState } from './GameState';
-import { sfx } from '@/hooks/useSoundEffects';
+import { Layers3, ThumbsUp, AlertCircle, XCircle } from 'lucide-react';
+import { generateFeedback, generateLifecycleInsight, GameState } from './GameState';
+import StepLayout from './StepLayout';
 
 interface FeedbackScreenProps {
   state: GameState;
@@ -9,71 +9,68 @@ interface FeedbackScreenProps {
   onGoToStep: (step: number) => void;
 }
 
+const SENTIMENT = {
+  positive: { label: 'Happy', Icon: ThumbsUp, card: 'feedback-positive', badge: 'bg-success/10 text-success', avatar: 'bg-success/15 text-success' },
+  warning: { label: 'Has concerns', Icon: AlertCircle, card: 'feedback-warning', badge: 'bg-warning/10 text-warning', avatar: 'bg-warning/15 text-warning' },
+  negative: { label: 'Not happy', Icon: XCircle, card: 'feedback-negative', badge: 'bg-danger/10 text-danger', avatar: 'bg-danger/15 text-danger' },
+} as const;
+
 const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
   const feedback = generateFeedback(state.selectedElements);
   const lifecycleInsight = generateLifecycleInsight(state.selectedElements);
-  const lifecycleCoverage = getLifecycleCoverage(state.selectedElements);
+  const happyCount = feedback.filter(f => f.sentiment === 'positive').length;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
-      <button
-        onClick={() => { sfx.navigate(); onGoToStep(5); }}
-        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Build
-      </button>
-      <div className="flex items-center gap-2 mb-2">
-        <Users className="w-5 h-5 text-primary" />
-        <h2 className="text-xl font-bold">Test Your Design</h2>
-      </div>
-      <p className="text-sm text-muted-foreground mb-6">See how different stakeholders respond to your explanation. Not happy? Go back to Build and revise.</p>
-
+    <StepLayout
+      stepNumber={5}
+      title="Test it with real people"
+      instruction="Three people read your new message. See what they think. Not happy with it? Go back and change your choices."
+      onBack={() => onGoToStep(5)}
+      backLabel="Back to Build to revise"
+      onNext={onNext}
+      nextLabel="Finish case study"
+      hint={`${happyCount} of ${feedback.length} happy`}
+    >
       <div className="space-y-4">
-        {feedback.map((fb, i) => (
-          <motion.div
-            key={fb.persona}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.3 }}
-            className={`feedback-card ${
-              fb.sentiment === 'positive' ? 'feedback-positive' : fb.sentiment === 'warning' ? 'feedback-warning' : 'feedback-negative'
-            }`}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                fb.sentiment === 'positive' ? 'bg-success/20 text-success' : fb.sentiment === 'warning' ? 'bg-warning/20 text-warning' : 'bg-danger/20 text-danger'
-              }`}>
-                {fb.persona.split(' ').map(n => n[0]).join('')}
+        {feedback.map((fb, i) => {
+          const s = SENTIMENT[fb.sentiment];
+          return (
+            <motion.div
+              key={fb.persona}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.2 }}
+              className={`feedback-card rounded-2xl ${s.card}`}
+            >
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${s.avatar}`}>
+                    {fb.persona.replace('Dr. ', '').split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{fb.persona}</p>
+                    <p className="text-sm text-muted-foreground">{fb.role}</p>
+                  </div>
+                </div>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${s.badge}`}>
+                  <s.Icon className="w-3.5 h-3.5" />
+                  {s.label}
+                </span>
               </div>
-              <div>
-                <p className="font-semibold text-sm">{fb.persona}</p>
-                <p className="text-xs text-muted-foreground">{fb.role}</p>
-              </div>
-            </div>
-            <p className="text-sm text-secondary-foreground italic">"{fb.message}"</p>
-          </motion.div>
-        ))}
+              <p className="text-secondary-foreground leading-relaxed">"{fb.message}"</p>
+            </motion.div>
+          );
+        })}
       </div>
 
-      <div className="glass-panel mt-6 p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Layers3 className="w-4 h-4 text-primary" />
-          <p className="section-label">Lifecycle Insight</p>
+      <div className="rounded-2xl bg-primary/5 border border-primary/20 p-5 mt-6 flex gap-3">
+        <Layers3 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+        <div>
+          <p className="font-semibold mb-1">Across the AI system</p>
+          <p className="text-sm text-secondary-foreground">{lifecycleInsight}</p>
         </div>
-        <p className="text-sm text-secondary-foreground">{lifecycleInsight}</p>
-        {lifecycleCoverage.addressed.length > 0 && (
-          <p className="text-xs text-muted-foreground mt-2">Addressed: {lifecycleCoverage.addressed.join(', ')}</p>
-        )}
       </div>
-
-      <div className="flex justify-end mt-8">
-        <button onClick={() => { sfx.navigate(); onNext(); }} className="btn-mission flex items-center gap-2">
-          Finish Case Study
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-    </motion.div>
+    </StepLayout>
   );
 };
 

@@ -34,27 +34,30 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {showHeader && (
-        <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm">
-          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-primary" />
-              <span className="font-semibold text-sm whitespace-nowrap">Credix Ethics Lab</span>
-              <div className="pulse-dot ml-1" />
+        <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+          <div className="max-w-5xl mx-auto px-4 pt-3 pb-3 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-semibold text-sm whitespace-nowrap">Credix Ethics Lab</span>
+              </div>
+              <ActivityTimer
+                totalRemaining={timer.totalRemaining}
+                stepRemaining={timer.stepRemaining}
+                stepElapsed={timer.stepElapsed}
+                currentStep={state.step}
+                isOvertime={timer.isOvertime}
+                isStepOvertime={timer.isStepOvertime}
+              />
             </div>
             <StepIndicator currentStep={state.step} />
-            <ActivityTimer
-              totalRemaining={timer.totalRemaining}
-              stepRemaining={timer.stepRemaining}
-              stepElapsed={timer.stepElapsed}
-              currentStep={state.step}
-              isOvertime={timer.isOvertime}
-              isStepOvertime={timer.isStepOvertime}
-            />
           </div>
         </header>
       )}
 
-      <main className="py-8 pb-16">
+      <main className="pt-8">
         {state.step === 2 && <EvidenceBoard state={state} onUpdate={updateState} onNext={nextStep} />}
         {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 4 && <SystemMapScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}

@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Search } from 'lucide-react';
+import { Check, Mail } from 'lucide-react';
+import StepLayout from './StepLayout';
 import { GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
@@ -37,89 +37,104 @@ const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenP
 
   const canProceed = state.missingInfo.length > 0 && state.biggestProblem && state.freeResponse.trim().length > 0;
 
+  const remaining = [state.missingInfo.length > 0, !!state.biggestProblem, state.freeResponse.trim().length > 0].filter(x => !x).length;
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">
-      <button
-        onClick={() => { sfx.navigate(); onGoToStep(2); }}
-        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Evidence
-      </button>
-      <div className="flex items-center gap-2 mb-6">
-        <Search className="w-5 h-5 text-primary" />
-        <h2 className="text-xl font-bold">Diagnose the Problem</h2>
-      </div>
-      <p className="text-sm text-muted-foreground mb-8">Based on what you've seen, identify what is missing from the message Emily received.</p>
-
-      {/* Question 1 */}
-      <div className="mb-8">
-        <p className="font-semibold mb-3">1. What important information is missing from the current explanation? <span className="text-muted-foreground font-normal text-sm">(Select all that apply)</span></p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {MISSING_OPTIONS.map(opt => (
-            <div
-              key={opt}
-              onClick={() => toggleMissing(opt)}
-              className={`checkbox-option flex items-center gap-3 ${state.missingInfo.includes(opt) ? 'selected' : ''}`}
-            >
-              <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center ${
-                state.missingInfo.includes(opt) ? 'bg-primary border-primary' : 'border-muted-foreground'
-              }`}>
-                {state.missingInfo.includes(opt) && <span className="text-primary-foreground text-xs">✓</span>}
-              </div>
-              <span className="text-sm">{opt}</span>
-            </div>
-          ))}
+    <StepLayout
+      stepNumber={2}
+      title="What's wrong with the message?"
+      instruction="Think about the message Emily received. Answer three quick questions."
+      onBack={() => onGoToStep(2)}
+      backLabel="Back to evidence"
+      onNext={onNext}
+      nextLabel="Next: System Map"
+      nextDisabled={!canProceed}
+      hint={canProceed ? 'All answered' : `${remaining} question${remaining === 1 ? '' : 's'} left`}
+    >
+      {/* Reminder of the original message */}
+      <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4 mb-6 flex gap-3">
+        <Mail className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+        <div>
+          <p className="text-xs font-semibold text-warning mb-1">The message Emily got</p>
+          <p className="text-sm text-secondary-foreground">"Your loan application has been denied based on an automated risk assessment. At this time, we are unable to approve your request."</p>
         </div>
       </div>
 
-      {/* Question 2 */}
-      <div className="mb-8">
-        <p className="font-semibold mb-3">2. What is the biggest problem with the current message? <span className="text-muted-foreground font-normal text-sm">(Select one)</span></p>
-        <div className="space-y-2">
-          {BIGGEST_PROBLEM_OPTIONS.map(opt => (
-            <div
-              key={opt}
-              onClick={() => onUpdate({ biggestProblem: opt })}
-              className={`checkbox-option flex items-center gap-3 ${state.biggestProblem === opt ? 'selected' : ''}`}
-            >
-              <div className={`w-4 h-4 rounded-full border shrink-0 flex items-center justify-center ${
-                state.biggestProblem === opt ? 'bg-primary border-primary' : 'border-muted-foreground'
-              }`}>
-                {state.biggestProblem === opt && <div className="w-2 h-2 rounded-full bg-primary-foreground" />}
-              </div>
-              <span className="text-sm">{opt}</span>
+      <div className="space-y-5">
+        <section className="question-card">
+          <div className="flex gap-3 mb-4">
+            <span className="question-number">1</span>
+            <div>
+              <p className="font-semibold">What important information is missing?</p>
+              <p className="text-sm text-muted-foreground">Pick all that apply.</p>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {MISSING_OPTIONS.map(opt => {
+              const on = state.missingInfo.includes(opt);
+              return (
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => { on ? sfx.deselect() : sfx.select(); toggleMissing(opt); }}
+                  className={`checkbox-option text-left flex items-center gap-3 ${on ? 'selected' : ''}`}
+                >
+                  <span className={`w-5 h-5 rounded-md border-2 shrink-0 flex items-center justify-center ${on ? 'bg-primary border-primary' : 'border-border'}`}>
+                    {on && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
+                  </span>
+                  <span className="text-sm">{opt}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-      {/* Question 3 */}
-      <div className="mb-8">
-        <p className="font-semibold mb-3">3. In one or two sentences, explain why the current explanation is not helpful to the user.</p>
-        <textarea
-          value={state.freeResponse}
-          onChange={e => onUpdate({ freeResponse: e.target.value })}
-          placeholder="Type your response here..."
-          rows={3}
-          className="w-full bg-muted border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-        />
-      </div>
+        <section className="question-card">
+          <div className="flex gap-3 mb-4">
+            <span className="question-number">2</span>
+            <div>
+              <p className="font-semibold">What is the biggest problem?</p>
+              <p className="text-sm text-muted-foreground">Pick one.</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {BIGGEST_PROBLEM_OPTIONS.map(opt => {
+              const on = state.biggestProblem === opt;
+              return (
+                <button
+                  type="button"
+                  key={opt}
+                  onClick={() => { sfx.select(); onUpdate({ biggestProblem: opt }); }}
+                  className={`checkbox-option w-full text-left flex items-center gap-3 ${on ? 'selected' : ''}`}
+                >
+                  <span className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center ${on ? 'border-primary' : 'border-border'}`}>
+                    {on && <span className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                  </span>
+                  <span className="text-sm">{opt}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-      <div className="flex justify-end">
-        <button
-          onClick={onNext}
-          disabled={!canProceed}
-          className={`btn-mission flex items-center gap-2 ${!canProceed ? 'opacity-40 cursor-not-allowed' : ''}`}
-        >
-          Continue to System Map
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        <section className="question-card">
+          <div className="flex gap-3 mb-4">
+            <span className="question-number">3</span>
+            <div>
+              <p className="font-semibold">Why isn't the message helpful to Emily?</p>
+              <p className="text-sm text-muted-foreground">One or two sentences is enough.</p>
+            </div>
+          </div>
+          <textarea
+            value={state.freeResponse}
+            onChange={e => onUpdate({ freeResponse: e.target.value })}
+            placeholder="Write your answer here..."
+            rows={3}
+            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+          />
+        </section>
       </div>
-      {!canProceed && (
-        <p className="text-xs text-muted-foreground text-right mt-2">Answer all questions to continue</p>
-      )}
-    </motion.div>
+    </StepLayout>
   );
 };
 

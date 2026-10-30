@@ -1,13 +1,6 @@
-import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
-const STEPS = [
-  'Evidence',
-  'Diagnose',
-  'System Map',
-  'Build',
-  'Test',
-];
+const STEPS = ['Evidence', 'Diagnose', 'System Map', 'Build', 'Test'];
 
 // App steps start at 2 (Evidence); display numbers start at 1.
 const FIRST_STEP = 2;
@@ -18,36 +11,30 @@ interface StepIndicatorProps {
 
 const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   return (
-    <div className="flex items-center gap-1 sm:gap-2">
+    <ol className="grid grid-cols-5 gap-2" aria-label="Progress">
       {STEPS.map((label, i) => {
         const stepIndex = i + FIRST_STEP;
-        const stepNum = i + 1;
         const isActive = stepIndex === currentStep;
         const isComplete = stepIndex < currentStep;
-
         return (
-          <div key={label} className="flex items-center gap-1 sm:gap-2">
-            <div className="flex items-center gap-1.5">
-              <motion.div
-                className={`step-indicator text-xs ${
-                  isActive ? 'step-active' : isComplete ? 'step-complete' : 'step-inactive'
-                }`}
-                animate={isActive ? { scale: [1, 1.1, 1] } : {}}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                {isComplete ? <Check className="w-3.5 h-3.5" /> : stepNum}
-              </motion.div>
-              <span className={`hidden md:inline text-xs ${isActive ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-                {label}
-              </span>
-            </div>
-            {i < STEPS.length - 1 && (
-              <div className={`w-4 sm:w-8 h-px ${isComplete ? 'bg-primary/40' : 'bg-border'}`} />
-            )}
-          </div>
+          <li key={label} className="flex flex-col gap-1.5" aria-current={isActive ? 'step' : undefined}>
+            <div
+              className={`h-1.5 rounded-full transition-colors duration-500 ${
+                isComplete || isActive ? 'bg-primary' : 'bg-muted'
+              } ${isActive ? 'opacity-100' : isComplete ? 'opacity-60' : ''}`}
+            />
+            <span
+              className={`flex items-center gap-1 text-xs truncate ${
+                isActive ? 'text-primary font-semibold' : isComplete ? 'text-foreground' : 'text-muted-foreground'
+              }`}
+            >
+              {isComplete && <Check className="w-3 h-3 shrink-0" />}
+              {label}
+            </span>
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 };
 

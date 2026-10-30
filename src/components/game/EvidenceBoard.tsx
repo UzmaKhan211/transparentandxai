@@ -26,7 +26,7 @@ const EVIDENCE_CARDS = [
     label: 'Message Sent to User',
     stage: 'Deployment Stage',
     color: 'text-warning',
-    content: `"Your loan application has been denied based on an automated risk assessment. At this time, we are unable to approve your request."`,
+    content: `"Your loan application has been denied due to a high-risk rating. At this time, we are unable to approve your request."`,
   },
   {
     id: 'applicant',

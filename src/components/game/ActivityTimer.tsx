@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
-import { Clock, Timer } from 'lucide-react';
-import { formatTime, getStepTimeLimit, STEP_LABELS } from '@/hooks/useActivityTimer';
+import { Clock } from 'lucide-react';
+import { formatTime, getStepTimeLimit } from '@/hooks/useActivityTimer';
 
 interface ActivityTimerProps {
   totalRemaining: number;
@@ -16,42 +15,29 @@ const ActivityTimer = ({
   stepRemaining,
   stepElapsed,
   currentStep,
-  isOvertime,
   isStepOvertime,
 }: ActivityTimerProps) => {
   const stepLimit = getStepTimeLimit(currentStep);
-  const stepLabel = STEP_LABELS[currentStep] ?? '';
-  const stepProgress = stepLimit > 0 ? Math.min(1, stepElapsed / stepLimit) : 0;
+  const lowTime = !isStepOvertime && stepRemaining <= 60;
+
+  const tone = isStepOvertime
+    ? 'border-danger/40 bg-danger/10 text-danger'
+    : lowTime
+      ? 'border-warning/40 bg-warning/10 text-warning'
+      : 'border-border bg-card text-foreground';
 
   return (
-    <div className="flex items-center gap-4 text-xs font-mono">
-      {/* Step timer */}
-      <div className="flex items-center gap-1.5">
-        <Timer className={`w-3.5 h-3.5 ${isStepOvertime ? 'text-[hsl(var(--danger))]' : 'text-muted-foreground'}`} />
-        <span className="text-muted-foreground hidden sm:inline">{stepLabel}:</span>
-        <span className={`font-medium ${isStepOvertime ? 'text-[hsl(var(--danger))]' : 'text-foreground'}`}>
-          {isStepOvertime ? '+' : ''}{formatTime(isStepOvertime ? stepElapsed - stepLimit : stepRemaining)}
+    <div className="flex items-center gap-3">
+      <div className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${tone}`} title="Suggested time for this step">
+        <Clock className="w-4 h-4" />
+        <span className="font-mono font-medium tabular-nums">
+          {isStepOvertime ? `+${formatTime(stepElapsed - stepLimit)}` : formatTime(stepRemaining)}
         </span>
-        {/* Mini progress bar */}
-        <div className="w-12 h-1 bg-muted rounded-full overflow-hidden hidden sm:block">
-          <motion.div
-            className={`h-full rounded-full ${isStepOvertime ? 'bg-[hsl(var(--danger))]' : stepProgress > 0.8 ? 'bg-[hsl(var(--warning))]' : 'bg-primary'}`}
-            animate={{ width: `${Math.min(100, stepProgress * 100)}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
+        <span className="hidden sm:inline text-xs opacity-80">{isStepOvertime ? 'over' : 'left'}</span>
       </div>
-
-      <div className="w-px h-4 bg-border" />
-
-      {/* Total timer */}
-      <div className="flex items-center gap-1.5">
-        <Clock className={`w-3.5 h-3.5 ${isOvertime ? 'text-[hsl(var(--danger))]' : 'text-muted-foreground'}`} />
-        <span className="text-muted-foreground hidden sm:inline">Total:</span>
-        <span className={`font-medium ${isOvertime ? 'text-[hsl(var(--danger))]' : totalRemaining < 5 * 60 ? 'text-[hsl(var(--warning))]' : 'text-foreground'}`}>
-          {isOvertime ? '+' + formatTime(Math.abs(totalRemaining)) : formatTime(totalRemaining)}
-        </span>
-      </div>
+      <span className="hidden md:inline text-xs text-muted-foreground">
+        {formatTime(totalRemaining)} total
+      </span>
     </div>
   );
 };

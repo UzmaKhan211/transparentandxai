@@ -35,7 +35,7 @@ const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenP
     onUpdate({ missingInfo: updated });
   };
 
-  const canProceed = state.missingInfo.length > 0 && state.biggestProblem && state.freeResponse.trim().length > 10;
+  const canProceed = state.missingInfo.length > 0 && state.biggestProblem && state.freeResponse.trim().length > 0;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto px-4">

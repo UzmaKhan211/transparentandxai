@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowLeft, Wrench, Eye } from 'lucide-react';
-import { EXPLANATION_OPTIONS, generatePreview, getLifecycleCoverage, GameState } from './GameState';
+import { Eye, Check, Mail } from 'lucide-react';
+import StepLayout from './StepLayout';
+import { AI_LIFECYCLE_STAGES, EXPLANATION_OPTIONS, generatePreview, getLifecycleCoverage, GameState } from './GameState';
 import { sfx } from '@/hooks/useSoundEffects';
 
 interface BuildScreenProps {
@@ -26,103 +27,99 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
   const canProceed = state.selectedElements.length > 0;
   const lifecycleCoverage = getLifecycleCoverage(state.selectedElements);
 
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto px-4">
-      <button
-        onClick={() => { sfx.navigate(); onGoToStep(4); }}
-        className="btn-outline-game flex items-center gap-2 text-sm mb-6"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to System Map
-      </button>
-      <div className="flex items-center gap-2 mb-2">
-        <Wrench className="w-5 h-5 text-primary" />
-        <h2 className="text-xl font-bold">Build the Explanation</h2>
-      </div>
-      <p className="text-sm text-muted-foreground mb-6">
-        Redesign the message Emily will receive. Choose up to <strong className="text-foreground">5 elements</strong> to include.
-        <span className="text-primary font-mono ml-2">{state.selectedElements.length}/5 selected</span>
-      </p>
+  const count = state.selectedElements.length;
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  return (
+    <StepLayout
+      stepNumber={4}
+      title="Build a better explanation"
+      instruction={<>Rewrite the message Emily gets. Choose up to <strong className="text-foreground">5 pieces</strong> to include — you can't have everything, so pick what matters most.</>}
+      width="wide"
+      onBack={() => onGoToStep(4)}
+      backLabel="Back to System Map"
+      onNext={onNext}
+      nextLabel="Next: Test it"
+      nextDisabled={!canProceed}
+      hint={canProceed ? `${count} of 5 chosen` : 'Choose at least one piece'}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-6 items-start">
         {/* Options */}
-        <div className="space-y-2">
-          <p className="section-label mb-2">Available Elements</p>
-          {EXPLANATION_OPTIONS.map(opt => {
-            const selected = state.selectedElements.includes(opt.id);
-            const disabled = !selected && state.selectedElements.length >= 5;
-            return (
-              <div
-                key={opt.id}
-                onClick={() => !disabled && toggleElement(opt.id)}
-                className={`checkbox-option flex items-center gap-3 ${selected ? 'selected' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-              >
-                <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center ${
-                  selected ? 'bg-primary border-primary' : 'border-muted-foreground'
-                }`}>
-                  {selected && <span className="text-primary-foreground text-xs">✓</span>}
-                </div>
-                <div className="min-w-0">
-                  <span className="text-sm block">{opt.label}</span>
-                  <span className="mt-1 inline-flex rounded-full border border-border bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">{opt.stage}</span>
-                </div>
-              </div>
-            );
-          })}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="section-label">Pieces you can add</p>
+            <div className="flex items-center gap-1" aria-label={`${count} of 5 chosen`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i < count ? 'bg-primary' : 'bg-muted'}`} />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            {EXPLANATION_OPTIONS.map(opt => {
+              const selected = state.selectedElements.includes(opt.id);
+              const disabled = !selected && count >= 5;
+              return (
+                <button
+                  type="button"
+                  key={opt.id}
+                  onClick={() => !disabled && toggleElement(opt.id)}
+                  disabled={disabled}
+                  className={`checkbox-option w-full text-left flex items-center gap-3 ${selected ? 'selected' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                >
+                  <span className={`w-5 h-5 rounded-md border-2 shrink-0 flex items-center justify-center ${selected ? 'bg-primary border-primary' : 'border-border'}`}>
+                    {selected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
+                  </span>
+                  <span className="text-sm flex-1">{opt.label}</span>
+                  <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden sm:inline">{opt.stage.replace(' Stage', '')}</span>
+                </button>
+              );
+            })}
+          </div>
+          {count >= 5 && (
+            <p className="text-sm text-muted-foreground mt-3">You've used all 5. Remove one to swap it for another.</p>
+          )}
         </div>
 
         {/* Live Preview */}
-        <div className="lg:sticky lg:top-4 self-start">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="lg:sticky lg:top-36">
+          <p className="section-label mb-3 flex items-center gap-2">
             <Eye className="w-4 h-4 text-primary" />
-            <p className="section-label">This is what Emily will see</p>
-          </div>
-          <div className="live-preview min-h-[200px]">
-            {preview ? (
-              <motion.div
-                key={state.selectedElements.join(',')}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="space-y-3"
-              >
-                <p className="font-semibold text-sm text-foreground">Dear Emily,</p>
-                {preview.split('\n\n').map((paragraph, i) => (
-                  <p key={i} className="text-sm text-secondary-foreground leading-relaxed">{paragraph}</p>
-                ))}
-                <p className="text-sm text-muted-foreground mt-4">— Credix Support Team</p>
-              </motion.div>
-            ) : (
-              <p className="text-muted-foreground text-sm italic">Select elements on the left to build the explanation...</p>
-            )}
+            What Emily will read
+          </p>
+          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-border bg-muted/40">
+              <Mail className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">From Credix · Your loan application</span>
+            </div>
+            <div className="p-5 min-h-[220px]">
+              {preview ? (
+                <motion.div key={state.selectedElements.join(',')} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+                  <p className="font-semibold text-sm">Dear Emily,</p>
+                  {preview.split('\n\n').map((paragraph, i) => (
+                    <p key={i} className="text-sm text-secondary-foreground leading-relaxed">{paragraph}</p>
+                  ))}
+                  <p className="text-sm text-muted-foreground pt-2">— Credix Support Team</p>
+                </motion.div>
+              ) : (
+                <p className="text-muted-foreground text-sm">Your message will appear here as you choose pieces.</p>
+              )}
+            </div>
+            <div className="px-5 py-3 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-2">Stages your message improves</p>
+              <div className="flex flex-wrap gap-1.5">
+                {AI_LIFECYCLE_STAGES.map(stage => {
+                  const on = lifecycleCoverage.addressed.includes(stage);
+                  return (
+                    <span key={stage} className={`rounded-full px-2.5 py-1 text-xs font-medium ${on ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      {on ? '✓ ' : ''}{stage.replace(' Stage', '')}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="glass-panel mt-6 p-4">
-        <p className="section-label mb-2">Where does your solution act?</p>
-        <p className="text-sm text-secondary-foreground">
-          {lifecycleCoverage.addressed.length > 0
-            ? `Your design improves transparency at: ${lifecycleCoverage.addressed.join(' and ')}.`
-            : 'Select explanation elements to see which lifecycle stages you are improving.'}
-        </p>
-        {lifecycleCoverage.missing.length > 0 && (
-          <p className="text-xs text-muted-foreground mt-2">
-            {lifecycleCoverage.missing.join(' and ')} {(lifecycleCoverage.missing.length === 1 ? 'is' : 'are')} not addressed.
-          </p>
-        )}
-      </div>
-
-      <div className="flex justify-end mt-8">
-        <button
-          onClick={onNext}
-          disabled={!canProceed}
-          className={`btn-mission flex items-center gap-2 ${!canProceed ? 'opacity-40 cursor-not-allowed' : ''}`}
-        >
-          Test Your Design
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-    </motion.div>
+    </StepLayout>
   );
 };
 

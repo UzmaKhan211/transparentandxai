@@ -1,23 +1,22 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Time allocation per step in seconds
-// 60-minute session: Section 1 reading (10 min) happens outside the app.
-// In-app: concept check (5) + case video (5) + case study steps (40) = 50 min
+// 60-minute session: Section 1 reading (10 min) and Section 2 case video (5 min)
+// happen outside the app. In-app: interactive case study = 45 min.
 export const STEP_TIME_LIMITS: Record<number, number> = {
-  0: 5 * 60,   // Concept Check: 5 min
-  1: 5 * 60,   // Case Video: 5 min
   2: 6 * 60,   // Evidence: 6 min
   3: 7 * 60,   // Diagnose: 7 min
-  4: 9 * 60,   // System Map: 9 min
-  5: 10 * 60,  // Build: 10 min
-  6: 8 * 60,   // Test: 8 min
+  4: 10 * 60,  // System Map: 10 min
+  5: 12 * 60,  // Build: 12 min
+  6: 10 * 60,  // Test: 10 min
 };
 
-export const TOTAL_TIME = 50 * 60; // in-app time in seconds
+export const TOTAL_TIME = 45 * 60; // in-app time in seconds
+
+export const FIRST_STEP = 2;
+export const LAST_TIMED_STEP = 6;
 
 export const STEP_LABELS: Record<number, string> = {
-  0: 'Concept Check',
-  1: 'Case Video',
   2: 'Evidence',
   3: 'Diagnose',
   4: 'System Map',
@@ -35,13 +34,8 @@ export function useActivityTimer(currentStep: number) {
   const [isRunning, setIsRunning] = useState(false);
   const stepStartRef = useRef(0);
 
-  // Start the timer when we hit step 0
   useEffect(() => {
-    if (currentStep >= 0 && currentStep <= 6) {
-      setIsRunning(true);
-    } else {
-      setIsRunning(false);
-    }
+    setIsRunning(currentStep >= FIRST_STEP && currentStep <= LAST_TIMED_STEP);
   }, [currentStep]);
 
   // Reset step elapsed when step changes

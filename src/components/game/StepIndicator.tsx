@@ -2,13 +2,15 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 const STEPS = [
-  'Case Video',
   'Evidence',
   'Diagnose',
   'System Map',
   'Build',
   'Test',
 ];
+
+// App steps start at 2 (Evidence); display numbers start at 1.
+const FIRST_STEP = 2;
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -18,9 +20,10 @@ const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   return (
     <div className="flex items-center gap-1 sm:gap-2">
       {STEPS.map((label, i) => {
+        const stepIndex = i + FIRST_STEP;
         const stepNum = i + 1;
-        const isActive = stepNum === currentStep;
-        const isComplete = stepNum < currentStep;
+        const isActive = stepIndex === currentStep;
+        const isComplete = stepIndex < currentStep;
 
         return (
           <div key={label} className="flex items-center gap-1 sm:gap-2">

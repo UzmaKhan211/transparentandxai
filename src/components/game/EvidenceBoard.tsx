@@ -121,7 +121,11 @@ const EvidenceBoard = ({ state, onUpdate, onNext }: EvidenceBoardProps) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto px-4">
       <div className="mb-6">
+        <p className="section-label mb-1">Emily Carter's Loan Denial</p>
         <h2 className="text-xl font-bold mb-1">Evidence Board</h2>
+        <p className="text-sm text-secondary-foreground mb-1">
+          You're on Credix's AI Ethics Team. Investigate the decision and design a clearer, fairer explanation for Emily.
+        </p>
         <p className="text-sm text-muted-foreground">
           Explore the case by reviewing the information below. Click on each item to learn more.
           <span className="text-primary ml-2 font-mono text-xs">{viewedCards.size}/{EVIDENCE_CARDS.length} reviewed</span>

@@ -43,14 +43,7 @@ const Index = () => {
                 </div>
                 <span className="font-semibold text-sm whitespace-nowrap">Credix Ethics Lab</span>
               </div>
-              <ActivityTimer
-                totalRemaining={timer.totalRemaining}
-                stepRemaining={timer.stepRemaining}
-                stepElapsed={timer.stepElapsed}
-                currentStep={state.step}
-                isOvertime={timer.isOvertime}
-                isStepOvertime={timer.isStepOvertime}
-              />
+              <ActivityTimer totalRemaining={timer.totalRemaining} isTimeUp={timer.isTimeUp} />
             </div>
             <StepIndicator currentStep={state.step} />
           </div>

@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
 import StepIndicator from '@/components/game/StepIndicator';
 import OnboardingScreen from '@/components/game/OnboardingScreen';
-import MissionBrief from '@/components/game/MissionBrief';
+import CaseVideo from '@/components/game/CaseVideo';
 import EvidenceBoard from '@/components/game/EvidenceBoard';
 import DiagnoseScreen from '@/components/game/DiagnoseScreen';
 import SystemMapScreen from '@/components/game/SystemMapScreen';
 import BuildScreen from '@/components/game/BuildScreen';
 import FeedbackScreen from '@/components/game/FeedbackScreen';
-import ReflectScreen from '@/components/game/ReflectScreen';
 import MissionCompleteScreen from '@/components/game/MissionCompleteScreen';
 import ActivityTimer from '@/components/game/ActivityTimer';
 import { GameState, initialGameState } from '@/components/game/GameState';
@@ -31,7 +30,7 @@ const Index = () => {
     goToStep(state.step + 1);
   }, [state.step, goToStep]);
 
-  const showHeader = state.step >= 0 && state.step <= 7;
+  const showHeader = state.step >= 0 && state.step <= 6;
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,7 +43,7 @@ const Index = () => {
               <span className="font-semibold text-sm">Credix Ethics Lab</span>
               <div className="pulse-dot ml-1" />
             </div>
-            {state.step > 0 && state.step <= 7 && <StepIndicator currentStep={state.step} />}
+            {state.step > 0 && state.step <= 6 && <StepIndicator currentStep={state.step} />}
             <ActivityTimer
               totalRemaining={timer.totalRemaining}
               stepRemaining={timer.stepRemaining}
@@ -60,14 +59,13 @@ const Index = () => {
       {/* Content */}
       <main className="py-8 pb-16">
         {state.step === 0 && <OnboardingScreen onNext={nextStep} onUpdate={updateState} />}
-        {state.step === 1 && <MissionBrief onNext={nextStep} />}
+        {state.step === 1 && <CaseVideo onNext={nextStep} />}
         {state.step === 2 && <EvidenceBoard state={state} onUpdate={updateState} onNext={nextStep} />}
         {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 4 && <SystemMapScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 5 && <BuildScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 6 && <FeedbackScreen state={state} onNext={nextStep} onGoToStep={goToStep} />}
-        {state.step === 7 && <ReflectScreen state={state} onUpdate={updateState} onGoToStep={goToStep} onSubmitAll={() => goToStep(8)} />}
-        {state.step === 8 && <MissionCompleteScreen state={state} />}
+        {state.step === 7 && <MissionCompleteScreen onGoToStep={goToStep} />}
       </main>
     </div>
   );

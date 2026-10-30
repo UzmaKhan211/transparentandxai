@@ -1,29 +1,28 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Time allocation per step in seconds
-// Total = 35 minutes (5 min concept check + 30 min simulation)
-const STEP_TIME_LIMITS: Record<number, number> = {
+// 60-minute session: Section 1 reading (10 min) happens outside the app.
+// In-app: concept check (5) + case video (5) + case study steps (40) = 50 min
+export const STEP_TIME_LIMITS: Record<number, number> = {
   0: 5 * 60,   // Concept Check: 5 min
-  1: 3 * 60,   // Brief: 3 min
-  2: 4 * 60,   // Evidence: 4 min
-  3: 4 * 60,   // Diagnose: 4 min
-  4: 5 * 60,   // System Map: 5 min
-  5: 7 * 60,   // Build: 7 min
-  6: 4 * 60,   // Test: 4 min
-  7: 3 * 60,   // Reflect: 3 min
+  1: 5 * 60,   // Case Video: 5 min
+  2: 6 * 60,   // Evidence: 6 min
+  3: 7 * 60,   // Diagnose: 7 min
+  4: 9 * 60,   // System Map: 9 min
+  5: 10 * 60,  // Build: 10 min
+  6: 8 * 60,   // Test: 8 min
 };
 
-const TOTAL_TIME = 35 * 60; // 35 minutes in seconds
+export const TOTAL_TIME = 50 * 60; // in-app time in seconds
 
 export const STEP_LABELS: Record<number, string> = {
   0: 'Concept Check',
-  1: 'Mission Brief',
+  1: 'Case Video',
   2: 'Evidence',
   3: 'Diagnose',
   4: 'System Map',
   5: 'Build',
   6: 'Test',
-  7: 'Reflect',
 };
 
 export function getStepTimeLimit(step: number): number {
@@ -38,7 +37,7 @@ export function useActivityTimer(currentStep: number) {
 
   // Start the timer when we hit step 0
   useEffect(() => {
-    if (currentStep >= 0 && currentStep <= 7) {
+    if (currentStep >= 0 && currentStep <= 6) {
       setIsRunning(true);
     } else {
       setIsRunning(false);

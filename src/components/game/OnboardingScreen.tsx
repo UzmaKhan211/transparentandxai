@@ -169,6 +169,7 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
                 Hands-on Exploration of<br />
                 <span className="text-primary">Explainability & Transparency</span> in AI
               </h1>
+              <p className="text-xs text-muted-foreground mb-3">Complete the Section 1 reading before you start.</p>
               <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
                 A simulation-based activity where you'll investigate an AI decision, diagnose what went wrong, and design a more transparent explanation.
               </p>
@@ -217,12 +218,12 @@ const OnboardingScreen = ({ onNext, onUpdate }: OnboardingScreenProps) => {
               <p className="section-label mb-3">Activity Steps</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-sm">
                 {[
-                  { step: 1, label: 'Read the mission brief', emoji: '📋' },
+                  { step: 1, label: 'Watch the case video', emoji: '🎬' },
                   { step: 2, label: 'Investigate the evidence', emoji: '🔍' },
                   { step: 3, label: 'Diagnose the problem', emoji: '🩺' },
-                  { step: 4, label: 'Build a better explanation', emoji: '🛠️' },
-                  { step: 5, label: 'Test with stakeholders', emoji: '👥' },
-                  { step: 6, label: 'Revise, reflect & submit', emoji: '✍️' },
+                  { step: 4, label: 'Fix the system map', emoji: '🗺️' },
+                  { step: 5, label: 'Build a better explanation', emoji: '🛠️' },
+                  { step: 6, label: 'Test with stakeholders', emoji: '👥' },
                 ].map(s => (
                   <div key={s.step} className="flex items-center gap-3 text-secondary-foreground p-3 rounded-lg bg-muted/60">
                     <span className="text-lg">{s.emoji}</span>

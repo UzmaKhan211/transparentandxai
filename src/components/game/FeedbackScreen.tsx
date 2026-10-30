@@ -27,7 +27,7 @@ const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
         <Users className="w-5 h-5 text-primary" />
         <h2 className="text-xl font-bold">Test Your Design</h2>
       </div>
-      <p className="text-sm text-muted-foreground mb-6">See how different stakeholders respond to your explanation.</p>
+      <p className="text-sm text-muted-foreground mb-6">See how different stakeholders respond to your explanation. Not happy? Go back to Build and revise.</p>
 
       <div className="space-y-4">
         {feedback.map((fb, i) => (
@@ -69,7 +69,7 @@ const FeedbackScreen = ({ state, onNext, onGoToStep }: FeedbackScreenProps) => {
 
       <div className="flex justify-end mt-8">
         <button onClick={() => { sfx.navigate(); onNext(); }} className="btn-mission flex items-center gap-2">
-          Revise & Reflect
+          Finish Case Study
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

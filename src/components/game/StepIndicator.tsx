@@ -2,13 +2,12 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 const STEPS = [
-  'Brief',
+  'Case Video',
   'Evidence',
   'Diagnose',
   'System Map',
   'Build',
   'Test',
-  'Reflect',
 ];
 
 interface StepIndicatorProps {

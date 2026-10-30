@@ -56,7 +56,7 @@ const DiagnoseScreen = ({ state, onUpdate, onNext, onGoToStep }: DiagnoseScreenP
         <Mail className="w-5 h-5 text-warning shrink-0 mt-0.5" />
         <div>
           <p className="text-xs font-semibold text-warning mb-1">The message Emily got</p>
-          <p className="text-sm text-secondary-foreground">"Your loan application has been denied based on an automated risk assessment. At this time, we are unable to approve your request."</p>
+          <p className="text-sm text-secondary-foreground">"Your loan application has been denied due to a high-risk rating. At this time, we are unable to approve your request."</p>
         </div>
       </div>
 

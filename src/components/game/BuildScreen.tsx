@@ -42,7 +42,7 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
       nextDisabled={!canProceed}
       hint={canProceed ? `${count} of 5 chosen` : 'Choose at least one piece'}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.1fr] gap-6 items-start">
         {/* Options */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -69,7 +69,7 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
                     {selected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
                   </span>
                   <span className="text-sm flex-1">{opt.label}</span>
-                  <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden sm:inline">{opt.stage.replace(' Stage', '')}</span>
+                  <span className="text-[11px] text-muted-foreground whitespace-nowrap hidden lg:inline">{opt.stage.replace(' Stage', '')}</span>
                 </button>
               );
             })}
@@ -80,7 +80,7 @@ const BuildScreen = ({ state, onUpdate, onNext, onGoToStep }: BuildScreenProps) 
         </div>
 
         {/* Live Preview */}
-        <div className="lg:sticky lg:top-36">
+        <div className="md:sticky md:top-36">
           <p className="section-label mb-3 flex items-center gap-2">
             <Eye className="w-4 h-4 text-primary" />
             What Emily will read

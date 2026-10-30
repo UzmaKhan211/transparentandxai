@@ -57,7 +57,7 @@ const Index = () => {
         </header>
       )}
 
-      <main className="py-8 pb-16">
+      <main className="pt-8">
         {state.step === 2 && <EvidenceBoard state={state} onUpdate={updateState} onNext={nextStep} />}
         {state.step === 3 && <DiagnoseScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
         {state.step === 4 && <SystemMapScreen state={state} onUpdate={updateState} onNext={nextStep} onGoToStep={goToStep} />}
